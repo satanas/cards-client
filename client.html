@@ -1,0 +1,95 @@
+<script src="lib/socket.io-1.3.5.js"></script>
+<script>
+  var socket = io('http://127.0.0.1:3000');
+  var hand = [];
+
+  socket.on('joined', function (data) {
+    console.log(data);
+  });
+
+  socket.on('rejected', function (data) {
+    console.log('Rejected:', data);
+  });
+
+  socket.on('ready', function (data) {
+  });
+
+  socket.on('opponents', function (data) {
+    console.log('Opponents:', data);
+  });
+
+  socket.on('hand', function (data) {
+    hand = data;
+    console.log('Hand:', data);
+  });
+
+  socket.on('turn', function (data) {
+    console.log('Your turn. Current mana:', data);
+  });
+
+  socket.on('wait', function (data) {
+    console.log('You have to wait your turn. Current mana:', data);
+  });
+
+  socket.on('unsick', function (data) {
+    console.log('Card', data.cardId, 'from player', data.playerId, 'is ready to be used');
+  });
+
+  socket.on('drawed-card', function (data) {
+    console.log('Player', data.player, 'drawed card', String(data.card.id) + '. ' + String(data.mana - data.usedMana), 'mana remaining');
+  });
+
+  socket.on('battle', function (data) {
+    //console.log('Battle between card', data.attacker.card.id, 'from player', data.attacker.player.id, 'and card', data.defender.card.id, 'from player', data.defender.player.id);
+    var attackerStats = ['damage dealt:', data.attacker.damageDealt, 'damage received:', data.attacker.damageReceived].join('');
+    var defenderStats = ['damage dealt:', data.defender.damageDealt, 'damage received:', data.defender.damageReceived].join('');
+    console.log('Battle');
+    console.log('  Attacker: card', data.attacker.card.id, 'from player', data.attacker.player.id, attackerStats);
+    console.log('  Defender: card', data.defender.card.id, 'from player', data.defender.player.id, defenderStats);
+  });
+
+  socket.on('direct-damage', function (data) {
+    console.log([data.attacker.damageDealt, 'pt(s) of damage dealt to', data.player.id].join(' '));
+  });
+
+  socket.on('leader-defeated', function (data) {
+    console.log('Leader', data, 'have been defeated');
+  });
+
+  socket.on('win', function (data) {
+    console.log('You have won');
+  });
+
+  socket.on('lose', function (data) {
+    console.log('You have been defeated');
+  });
+
+  // Errors
+  socket.on('no-mana', function (data) {
+    console.log('You don\'t have enough mana to play that card');
+  });
+
+  socket.on('no-turn', function (data) {
+    console.log('It is not your turn. You can not do anything');
+  });
+
+  socket.on('no-player', function (data) {
+    console.log('That player does not exist');
+  });
+
+  socket.on('card-not-found', function (data) {
+    console.log('That card is not yours');
+  });
+
+  socket.on('card-sick', function (data) {
+    console.log('You can not play that card because it is sick');
+  });
+
+  socket.on('card-used', function (data) {
+    console.log('That card was already used');
+  });
+
+  socket.on('invalid-op', function (data) {
+    console.log('Invalid operation. You can not do that');
+  });
+</script>
