@@ -1,95 +1,212 @@
+<!doctype html>
+<html>
+<head>
+<title>A Magic clone</title>
+<meta charset=utf-8>
 <script src="lib/socket.io-1.3.5.js"></script>
+<script src="lib/jquery-1.11.3.js"></script>
+<script src="lib/underscore-1.8.3.js"></script>
+<script src="lib/backbone-1.2.0.js"></script>
+<script src="lib/hogan-3.0.1.js"></script>
+<link rel="stylesheet" href="css/foundation.css" />
+<link rel="stylesheet" href="css/normalize.css" />
+<link rel="stylesheet" href="css/style.css" />
+
 <script>
-  var socket = io('http://127.0.0.1:3000');
-  var hand = [];
+var socket = io('http://127.0.0.1:3000');
+var hand = [];
+var battlefield = {};
+var id = null;
 
-  socket.on('joined', function (data) {
-    console.log(data);
-  });
+socket.on('joined', function (data) {
+  console.log('Your ID:', data);
+  id = data;
+  battlefieldView.clear();
+  battlefieldView.addPlayer(data);
+});
 
-  socket.on('rejected', function (data) {
-    console.log('Rejected:', data);
-  });
+socket.on('rejected', function (data) {
+  console.log('Rejected:', data);
+});
 
-  socket.on('ready', function (data) {
-  });
+socket.on('ready', function (data) {
+});
 
-  socket.on('opponents', function (data) {
-    console.log('Opponents:', data);
-  });
+socket.on('opponents', function (data) {
+  console.log('Opponents:', data);
+  battlefieldView.addPlayer(data);
+});
 
-  socket.on('hand', function (data) {
-    hand = data;
-    console.log('Hand:', data);
+socket.on('hand', function (data) {
+  hand = data;
+  hand.forEach(function(card) {
   });
+  console.log('Hand:', data);
+});
 
-  socket.on('turn', function (data) {
-    console.log('Your turn. Current mana:', data);
-  });
+socket.on('turn', function (data) {
+  console.log('Your turn. Current mana:', data);
+});
 
-  socket.on('wait', function (data) {
-    console.log('You have to wait your turn. Current mana:', data);
-  });
+socket.on('wait', function (data) {
+  console.log('You have to wait your turn. Current mana:', data);
+});
 
-  socket.on('unsick', function (data) {
-    console.log('Card', data.cardId, 'from player', data.playerId, 'is ready to be used');
-  });
+socket.on('unsick', function (data) {
+  console.log('Card', data.cardId, 'from player', data.playerId, 'is ready to be used');
+});
 
-  socket.on('drawed-card', function (data) {
-    console.log('Player', data.player, 'drawed card', String(data.card.id) + '. ' + String(data.mana - data.usedMana), 'mana remaining');
-  });
+socket.on('drawed-card', function (data) {
+  console.log('Player', data.player, 'drawed card', String(data.card.id) + '. ' + String(data.mana - data.usedMana), 'mana remaining');
+  battlefieldView.addCard(data);
+});
 
-  socket.on('battle', function (data) {
-    //console.log('Battle between card', data.attacker.card.id, 'from player', data.attacker.player.id, 'and card', data.defender.card.id, 'from player', data.defender.player.id);
-    var attackerStats = ['damage dealt:', data.attacker.damageDealt, 'damage received:', data.attacker.damageReceived].join('');
-    var defenderStats = ['damage dealt:', data.defender.damageDealt, 'damage received:', data.defender.damageReceived].join('');
-    console.log('Battle');
-    console.log('  Attacker: card', data.attacker.card.id, 'from player', data.attacker.player.id, attackerStats);
-    console.log('  Defender: card', data.defender.card.id, 'from player', data.defender.player.id, defenderStats);
-  });
+socket.on('battle', function (data) {
+  //console.log('Battle between card', data.attacker.card.id, 'from player', data.attacker.player.id, 'and card', data.defender.card.id, 'from player', data.defender.player.id);
+  var attackerStats = ['damage dealt:', data.attacker.damageDealt, 'damage received:', data.attacker.damageReceived].join('');
+  var defenderStats = ['damage dealt:', data.defender.damageDealt, 'damage received:', data.defender.damageReceived].join('');
+  console.log('Battle');
+  console.log('  Attacker: card', data.attacker.card.id, 'from player', data.attacker.player.id, attackerStats);
+  console.log('  Defender: card', data.defender.card.id, 'from player', data.defender.player.id, defenderStats);
+});
 
-  socket.on('direct-damage', function (data) {
-    console.log([data.attacker.damageDealt, 'pt(s) of damage dealt to', data.player.id].join(' '));
-  });
+socket.on('direct-damage', function (data) {
+  console.log([data.attacker.damageDealt, 'pt(s) of damage dealt to', data.player.id].join(' '));
+});
 
-  socket.on('leader-defeated', function (data) {
-    console.log('Leader', data, 'have been defeated');
-  });
+socket.on('leader-defeated', function (data) {
+  console.log('Leader', data, 'have been defeated');
+});
 
-  socket.on('win', function (data) {
-    console.log('You have won');
-  });
+socket.on('win', function (data) {
+  console.log('You have won');
+});
 
-  socket.on('lose', function (data) {
-    console.log('You have been defeated');
-  });
+socket.on('lose', function (data) {
+  console.log('You have been defeated');
+});
 
-  // Errors
-  socket.on('no-mana', function (data) {
-    console.log('You don\'t have enough mana to play that card');
-  });
+// Errors
+socket.on('no-mana', function (data) {
+  console.log('You don\'t have enough mana to play that card');
+});
 
-  socket.on('no-turn', function (data) {
-    console.log('It is not your turn. You can not do anything');
-  });
+socket.on('no-turn', function (data) {
+  console.log('It is not your turn. You can not do anything');
+});
 
-  socket.on('no-player', function (data) {
-    console.log('That player does not exist');
-  });
+socket.on('no-player', function (data) {
+  console.log('That player does not exist');
+});
 
-  socket.on('card-not-found', function (data) {
-    console.log('That card is not yours');
-  });
+socket.on('card-not-found', function (data) {
+  console.log('That card is not yours');
+});
 
-  socket.on('card-sick', function (data) {
-    console.log('You can not play that card because it is sick');
-  });
+socket.on('card-sick', function (data) {
+  console.log('You can not play that card because it is sick');
+});
 
-  socket.on('card-used', function (data) {
-    console.log('That card was already used');
-  });
+socket.on('card-used', function (data) {
+  console.log('That card was already used');
+});
 
-  socket.on('invalid-op', function (data) {
-    console.log('Invalid operation. You can not do that');
-  });
+socket.on('invalid-op', function (data) {
+  console.log('Invalid operation. You can not do that');
+});
+
+var BattlefieldView = Backbone.View.extend({
+  render: function() {
+  },
+
+  clear: function() {
+    $('#battlefield').html('');
+  },
+
+  addPlayer: function(playerId) {
+    $('#battlefield').prepend('<div class="' + playerId + '"><ul class="ground"></ul></div>');
+  },
+
+  addCard: function(data) {
+    console.log('Drawing card', data);
+    $('#battlefield .' + data.player.id + ' .ground').append('<li class="card">' +
+        '<div class="mana">' + data.card.mana + '</div>' +
+        '<div class="name">' + data.card.name + '</div>' +
+        '<div class"stats">' +  data.card.attack + '/' + data.card.health + '</div>' +
+        '</li>');
+  },
+});
+
+var OwnHandView = Backbone.View.extend({
+
+});
+
+var battlefieldView = null;
+
+$(document).ready(function() {
+  battlefieldView = new BattlefieldView();
+});
+
 </script>
+</head>
+
+<body>
+  <div id="application">
+    <div id="opponent" class="row">
+      <div class="util small-2 columns"></div>
+      <div class="util small-8 columns">
+        <ul class="hand">
+          <!-- li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li -->
+        </ul>
+      </div>
+      <div class="util small-2 columns"></div>
+    </div>
+
+    <div id="battlefield">
+      <!-- div class="123123123">
+        <ul class="ground">
+          <li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li>
+        </ul>
+      </div>
+      <hr/>
+      <div class="891273812">
+        <ul class="ground">
+          <li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li>
+        </ul>
+      </div -->
+    </div>
+
+    <div id="you" class="row">
+      <div class="util small-2 columns"></div>
+      <div class="util small-8 columns">
+        <ul class="hand">
+          <li class="card">
+            <div class="mana">1</div>
+            <div class="name">Kli Monster</div>
+            <div class"stats">1/2</div>
+          </li>
+          <li class="card"></li>
+          <li class="card"></li>
+          <li class="card"></li>
+        </ul>
+      </div>
+      <div class="util small-2 columns">
+        <div class="controls top">
+          <button id="end-turn" class="button round success">End turn</button>
+        </div>
+        <div class="card"></div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

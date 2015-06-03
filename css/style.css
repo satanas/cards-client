@@ -1,0 +1,88 @@
+hr {
+  margin: 0;
+  padding: 0;
+}
+
+#application {
+  width: 800px;
+  height: 600px;
+  margin: 0 auto;
+  border: 1px solid #000;
+}
+
+#battlefield {
+  height: 280px;
+}
+
+#battlefield > div {
+  height: 139px;
+}
+
+.util {
+  height: 160px;
+  border: 1px solid #ccc;
+}
+
+ul.hand, ul.ground {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+  clear: both;
+  height: 100%;
+}
+
+ul.hand > li.card {
+  height: 100px;
+  width: 65px;
+  position: relative;
+  float: left;
+}
+
+#you > .util > ul.hand > .card {
+  border: 1px solid #00f;
+  top: 58px;
+}
+
+#opponent > .util > ul.hand > .card {
+  border: 1px solid #f00;
+}
+
+ul.ground > li.card {
+  height: 123px;
+  width: 80px;
+  float: left;
+  border: 1px solid #0f0;
+  top: 8px;
+  position: relative;
+}
+
+#you > .util > .face {
+  z-index: 1;
+  width: 120px;
+  height:120px;
+  margin: 0 auto;
+}
+
+.controls.top {
+  height: 24px;
+}
+
+#end-turn {
+  display: none;
+  padding: 5px;
+  font-size: 12px;
+  width: 100%;
+  margin: 0;
+}
+
+.card .mana {
+  font-size: 13px;
+}
+
+.card .name {
+  font-size: 10px;
+}
+
+.card .stats {
+  font-size: 14px;
+}
