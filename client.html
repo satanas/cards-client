@@ -40,6 +40,7 @@ socket.on('opponents', function (data) {
 socket.on('hand', function (data) {
   data.forEach(function(d) {
     var card = new Card({
+      id: d.id,
       mana: d.mana,
       name: d.name,
       attack: d.attack,
@@ -147,6 +148,7 @@ var BattlefieldView = Backbone.View.extend({
 
 var Card = Backbone.Model.extend({
   defaults: {
+    id: null,
     name: 'Foo',
     mana: 1,
     attack: 0,
@@ -163,20 +165,20 @@ var Hand = Backbone.Collection.extend({
 var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
+  initialize: function(options) {
+    this.reversed = options.reversed;
+  },
   render: function() {
-    var html = '<div class="mana">' + this.model.get('mana') + '</div>' +
-      '<div class="name">' + this.model.get('name') + '</div>' +
-      '<div class"stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
+    var html = null;
+    if (this.reversed) {
+      html = '';
+    } else {
+      html = '<div style="display: none;" id="' + this.model.get('id') + '"></div>' +
+        '<div class="mana">' + this.model.get('mana') + '</div>' +
+        '<div class="name">' + this.model.get('name') + '</div>' +
+        '<div class"stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
+    }
     this.$el.html(html);
-    return this;
-  }
-});
-
-var CardBackView = Backbone.View.extend({
-  tagName: 'li',
-  className: 'card',
-  render: function() {
-    this.$el.html('');
     return this;
   }
 });
@@ -189,9 +191,9 @@ var HandView = Backbone.View.extend({
   addCard: function(card) {
     var cardView = null;
     if (this.opponent) {
-      cardView = new CardBackView({model: card});
+      cardView = new CardView({model: card, reversed: true});
     } else {
-      cardView = new CardView({model: card});
+      cardView = new CardView({model: card, reversed: false});
     }
     this.$el.append(cardView.render().el);
   },
@@ -202,13 +204,16 @@ var HandView = Backbone.View.extend({
 });
 
 
-var battlefieldView = null, hand = null, handView = null;
+var battlefieldView = null,
+    hand = null,
+    ownHandView = null,
+    opponentHandView = null;
 
 $(document).ready(function() {
   battlefieldView = new BattlefieldView();
   hand = new Hand();
-  handView = new HandView({collection: hand, el:'#you > .util > ul', opponent: false});
-  oHandView = new HandView({collection: hand, el:'#opponent > .util > ul', opponent: true});
+  ownHandView = new HandView({collection: hand, el:'#you > .util > ul', opponent: false});
+  opponentHandView = new HandView({collection: hand, el:'#opponent > .util > ul', opponent: true});
 });
 
 </script>
