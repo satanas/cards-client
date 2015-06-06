@@ -38,8 +38,14 @@ socket.on('opponents', function (data) {
 });
 
 socket.on('hand', function (data) {
-  hand = data;
-  hand.forEach(function(card) {
+  data.forEach(function(d) {
+    var card = new Card({
+      mana: d.mana,
+      name: d.name,
+      attack: d.attack,
+      health: d.health
+    });
+    hand.add(card);
   });
   console.log('Hand:', data);
 });
@@ -137,17 +143,76 @@ var BattlefieldView = Backbone.View.extend({
   },
 });
 
-var OwnHandView = Backbone.View.extend({
+// Models
 
+var Card = Backbone.Model.extend({
+  defaults: {
+    name: 'Foo',
+    mana: 1,
+    attack: 0,
+    health: 0
+  }
 });
 
-var battlefieldView = null;
+var Hand = Backbone.Collection.extend({
+  model: Card
+});
+
+// Views
+
+var CardView = Backbone.View.extend({
+  tagName: 'li',
+  className: 'card',
+  render: function() {
+    var html = '<div class="mana">' + this.model.get('mana') + '</div>' +
+      '<div class="name">' + this.model.get('name') + '</div>' +
+      '<div class"stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
+    this.$el.html(html);
+    return this;
+  }
+});
+
+var CardBackView = Backbone.View.extend({
+  tagName: 'li',
+  className: 'card',
+  render: function() {
+    this.$el.html('');
+    return this;
+  }
+});
+
+var HandView = Backbone.View.extend({
+  initialize: function(options) {
+    this.opponent = options.opponent,
+    this.collection.on('add', this.addCard, this);
+  },
+  addCard: function(card) {
+    var cardView = null;
+    if (this.opponent) {
+      cardView = new CardBackView({model: card});
+    } else {
+      cardView = new CardView({model: card});
+    }
+    this.$el.append(cardView.render().el);
+  },
+  render: function() {
+    this.collection.forEach(this.addCard, this);
+    return this;
+  }
+});
+
+
+var battlefieldView = null, hand = null, handView = null;
 
 $(document).ready(function() {
   battlefieldView = new BattlefieldView();
+  hand = new Hand();
+  handView = new HandView({collection: hand, el:'#you > .util > ul', opponent: false});
+  oHandView = new HandView({collection: hand, el:'#opponent > .util > ul', opponent: true});
 });
 
 </script>
+
 </head>
 
 <body>
@@ -188,16 +253,7 @@ $(document).ready(function() {
     <div id="you" class="row">
       <div class="util small-2 columns"></div>
       <div class="util small-8 columns">
-        <ul class="hand">
-          <li class="card">
-            <div class="mana">1</div>
-            <div class="name">Kli Monster</div>
-            <div class"stats">1/2</div>
-          </li>
-          <li class="card"></li>
-          <li class="card"></li>
-          <li class="card"></li>
-        </ul>
+        <ul class="hand"></ul>
       </div>
       <div class="util small-2 columns">
         <div class="controls top">
