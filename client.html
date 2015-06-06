@@ -78,10 +78,12 @@ socket.on('hands', function (data) {
 
 socket.on('turn', function (data) {
   console.log('Your turn. Current mana:', data);
+  turnView.onTurn();
 });
 
 socket.on('wait', function (data) {
   console.log('You have to wait your turn. Current mana:', data);
+  turnView.enemyTurn();
 });
 
 socket.on('unsick', function (data) {
@@ -228,8 +230,20 @@ var HandView = Backbone.View.extend({
   }
 });
 
+var TurnView = Backbone.View.extend({
+  onTurn: function() {
+    $('#end-turn').show();
+    $('#enemy-turn').hide();
+  },
+  enemyTurn: function(id) {
+    $('#end-turn').hide();
+    $('#enemy-turn').show();
+  }
+});
+
 $(document).ready(function() {
   battlefieldView = new BattlefieldView();
+  turnView = new TurnView()
 });
 
 </script>
@@ -239,7 +253,12 @@ $(document).ready(function() {
 <body>
   <div id="application">
     <div id="opponent" class="row">
-      <div class="util small-2 columns"></div>
+      <div class="util small-2 columns">
+        <div class="deck"></div>
+        <div class="controls bottom">
+          <span id="enemy-turn" class="round alert label">Enemy turn</span>
+        </div>
+      </div>
       <div class="util small-8 columns">
         <ul class="hand"></ul>
       </div>
@@ -275,7 +294,8 @@ $(document).ready(function() {
         <div class="controls top">
           <button id="end-turn" class="button round success">End turn</button>
         </div>
-        <div class="card"></div>
+        <div class="deck"></div>
+        </div>
       </div>
     </div>
   </div>
