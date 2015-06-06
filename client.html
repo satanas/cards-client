@@ -13,16 +13,26 @@
 <link rel="stylesheet" href="css/style.css" />
 
 <script>
-var socket = io('http://127.0.0.1:3000');
-var hand = [];
-var battlefield = {};
-var id = null;
+var socket = io('http://127.0.0.1:3000'),
+    battlefield = {},
+    players = {},
+    id = null,
+    battlefieldView = null,
+    ownHand = null,
+    ownHandView = null,
+    opponentHand = null,
+    opponentHandView = null;
 
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
   id = data;
-  battlefieldView.clear();
-  battlefieldView.addPlayer(data);
+  ownHand = new Hand();
+  ownHandView = new HandView({collection: ownHand, el:'#you > .util > ul', opponent: false});
+  players[id] = {
+    hand: ownHand
+  }
+  //battlefieldView.clear();
+  //battlefieldView.addPlayer(data);
 });
 
 socket.on('rejected', function (data) {
@@ -34,21 +44,36 @@ socket.on('ready', function (data) {
 
 socket.on('opponents', function (data) {
   console.log('Opponents:', data);
-  battlefieldView.addPlayer(data);
+  id = data;
+  opponentHand = new Hand();
+  opponentHandView = new HandView({collection: opponentHand, el:'#opponent > .util > ul', opponent: true});
+  players[id] = {
+    hand: opponentHand
+  }
+  //battlefieldView.addPlayer(data);
 });
 
-socket.on('hand', function (data) {
-  data.forEach(function(d) {
-    var card = new Card({
-      id: d.id,
-      mana: d.mana,
-      name: d.name,
-      attack: d.attack,
-      health: d.health
-    });
-    hand.add(card);
+socket.on('hands', function (data) {
+  Object.keys(data).forEach(function(key) {
+    if (key === 'you') {
+      data['you']['hand'].forEach(function(d) {
+        var card = new Card({
+          id: d.id,
+          mana: d.mana,
+          name: d.name,
+          attack: d.attack,
+          health: d.health
+        });
+        ownHand.add(card);
+      });
+    } else {
+      for (var i=0; i < data[key]['count']; i++) {
+        var card = new Card({});
+        opponentHand.add(card);
+      }
+    }
   });
-  console.log('Hand:', data);
+  console.log('Hands:', data);
 });
 
 socket.on('turn', function (data) {
@@ -203,17 +228,8 @@ var HandView = Backbone.View.extend({
   }
 });
 
-
-var battlefieldView = null,
-    hand = null,
-    ownHandView = null,
-    opponentHandView = null;
-
 $(document).ready(function() {
   battlefieldView = new BattlefieldView();
-  hand = new Hand();
-  ownHandView = new HandView({collection: hand, el:'#you > .util > ul', opponent: false});
-  opponentHandView = new HandView({collection: hand, el:'#opponent > .util > ul', opponent: true});
 });
 
 </script>
@@ -225,12 +241,7 @@ $(document).ready(function() {
     <div id="opponent" class="row">
       <div class="util small-2 columns"></div>
       <div class="util small-8 columns">
-        <ul class="hand">
-          <!-- li class="card"></li>
-          <li class="card"></li>
-          <li class="card"></li>
-          <li class="card"></li -->
-        </ul>
+        <ul class="hand"></ul>
       </div>
       <div class="util small-2 columns"></div>
     </div>

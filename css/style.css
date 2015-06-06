@@ -45,6 +45,7 @@ ul.hand > li.card {
 
 #opponent > .util > ul.hand > .card {
   border: 1px solid #f00;
+  background-color: #ff6767;
 }
 
 ul.ground > li.card {
