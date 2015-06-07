@@ -53,9 +53,13 @@ ul.ground > li.card {
   height: 123px;
   width: 80px;
   float: left;
-  border: 1px solid #0f0;
+  border: 1px solid #ccc;
   top: 8px;
   position: relative;
+}
+
+ul.ground > li.card.sick {
+  border: 1px solid #0f0;
 }
 
 #you > .util > .face {

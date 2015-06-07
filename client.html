@@ -93,7 +93,8 @@ socket.on('wait', function (data) {
 });
 
 socket.on('unsick', function (data) {
-  console.log('Card', data.cardId, 'from player', data.playerId, 'is ready to be used');
+  console.log('Card', data.card.id, 'from player', data.player.id, 'is ready to be used');
+  battlefieldView.unsickCard(data);
 });
 
 socket.on('drawed-card', function (data) {
@@ -103,6 +104,8 @@ socket.on('drawed-card', function (data) {
   battlefieldView.addCard(data);
   if (data.player.id === ownId) {
     manaView.setMana(data.mana, data.usedMana, true);
+  } else {
+    manaView.setMana(data.mana, data.usedMana, false);
   }
 });
 
@@ -168,7 +171,8 @@ var Card = Backbone.Model.extend({
     name: 'Foo',
     mana: 1,
     attack: 0,
-    health: 0
+    health: 0,
+    sick: true
   }
 });
 
@@ -186,6 +190,7 @@ var CardView = Backbone.View.extend({
   },
   initialize: function(options) {
     this.reversed = options.reversed;
+    this.drawed = false;
   },
   render: function() {
     var html = null;
@@ -193,6 +198,7 @@ var CardView = Backbone.View.extend({
       html = '';
     } else {
       this.$el.attr('id', ownId + "-" + this.model.get('id'));
+      this.$el.addClass('sick');
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
         '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
@@ -202,8 +208,10 @@ var CardView = Backbone.View.extend({
   },
   draw: function() {
     if (this.reversed) return;
+    if (this.drawed) return;
     if (!inTurn) return;
 
+    this.drawed = true;
     socket.emit('draw', this.model.get('id'));
   }
 });
@@ -253,15 +261,16 @@ var BattlefieldView = Backbone.View.extend({
   clear: function() {
     $('#battlefield').html('');
   },
-
   addPlayer: function(playerId) {
     $('#battlefield').prepend('<div class="' + playerId + '"><ul class="ground"></ul></div>');
   },
-
   addCard: function(data) {
     var card = new Card(data.card);
     var cardView = new CardView({model: card, reversed: false})
     $('#battlefield .' + data.player.id + ' .ground').append(cardView.render().el);
+  },
+  unsickCard: function(data) {
+    $('#' + data.player.id + '-' + data.card.id).removeClass('sick');
   }
 });
 
