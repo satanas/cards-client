@@ -94,3 +94,11 @@ ul.ground > li.card {
   border: 1px solid #000;
   margin: 10px auto;
 }
+
+#you > .util > .deck {
+  background-color: #6073ff;
+}
+
+#opponent > .util > .deck {
+  background-color: #ff6767;
+}
