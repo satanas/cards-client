@@ -16,7 +16,8 @@
 var socket = io('http://127.0.0.1:3000'),
     battlefield = {},
     players = {},
-    id = null,
+    ownId = null,
+    inTurn = false,
     battlefieldView = null,
     ownHand = null,
     ownHandView = null,
@@ -25,14 +26,14 @@ var socket = io('http://127.0.0.1:3000'),
 
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
-  id = data;
+  ownId = data;
   ownHand = new Hand();
   ownHandView = new HandView({collection: ownHand, el:'#you > .util > ul', opponent: false});
-  players[id] = {
+  players[ownId] = {
     hand: ownHand
   }
-  //battlefieldView.clear();
-  //battlefieldView.addPlayer(data);
+  battlefieldView.clear();
+  battlefieldView.addPlayer(data);
 });
 
 socket.on('rejected', function (data) {
@@ -44,13 +45,13 @@ socket.on('ready', function (data) {
 
 socket.on('opponents', function (data) {
   console.log('Opponents:', data);
-  id = data;
+  var opponentId = data;
   opponentHand = new Hand();
   opponentHandView = new HandView({collection: opponentHand, el:'#opponent > .util > ul', opponent: true});
-  players[id] = {
+  players[opponentId] = {
     hand: opponentHand
   }
-  //battlefieldView.addPlayer(data);
+  battlefieldView.addPlayer(opponentId);
 });
 
 socket.on('hands', function (data) {
@@ -77,6 +78,7 @@ socket.on('hands', function (data) {
 });
 
 socket.on('turn', function (data) {
+  inTurn = true;
   alert('Your turn!');
   console.log('Your turn. Current mana:', data);
   turnView.onTurn();
@@ -84,6 +86,7 @@ socket.on('turn', function (data) {
 
 socket.on('wait', function (data) {
   console.log('You have to wait your turn. Current mana:', data);
+  inTurn = false;
   turnView.enemyTurn();
 });
 
@@ -93,6 +96,8 @@ socket.on('unsick', function (data) {
 
 socket.on('drawed-card', function (data) {
   console.log('Player', data.player, 'drawed card', String(data.card.id) + '. ' + String(data.mana - data.usedMana), 'mana remaining');
+  var card = ownHand.get(data.card.id);
+  ownHand.remove(card);
   battlefieldView.addCard(data);
 });
 
@@ -150,28 +155,6 @@ socket.on('invalid-op', function (data) {
   console.log('Invalid operation. You can not do that');
 });
 
-var BattlefieldView = Backbone.View.extend({
-  render: function() {
-  },
-
-  clear: function() {
-    $('#battlefield').html('');
-  },
-
-  addPlayer: function(playerId) {
-    $('#battlefield').prepend('<div class="' + playerId + '"><ul class="ground"></ul></div>');
-  },
-
-  addCard: function(data) {
-    console.log('Drawing card', data);
-    $('#battlefield .' + data.player.id + ' .ground').append('<li class="card">' +
-        '<div class="mana">' + data.card.mana + '</div>' +
-        '<div class="name">' + data.card.name + '</div>' +
-        '<div class"stats">' +  data.card.attack + '/' + data.card.health + '</div>' +
-        '</li>');
-  },
-});
-
 // Models
 
 var Card = Backbone.Model.extend({
@@ -193,6 +176,9 @@ var Hand = Backbone.Collection.extend({
 var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
+  events: {
+    'click': 'draw'
+  },
   initialize: function(options) {
     this.reversed = options.reversed;
   },
@@ -201,13 +187,19 @@ var CardView = Backbone.View.extend({
     if (this.reversed) {
       html = '';
     } else {
-      html = '<div style="display: none;" id="' + this.model.get('id') + '"></div>' +
-        '<div class="mana">' + this.model.get('mana') + '</div>' +
+      this.$el.attr('id', ownId + "-" + this.model.get('id'));
+      html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
-        '<div class"stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
+        '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
     }
     this.$el.html(html);
     return this;
+  },
+  draw: function() {
+    if (this.reversed) return;
+    if (!inTurn) return;
+
+    socket.emit('draw', this.model.get('id'));
   }
 });
 
@@ -215,6 +207,7 @@ var HandView = Backbone.View.extend({
   initialize: function(options) {
     this.opponent = options.opponent,
     this.collection.on('add', this.addCard, this);
+    this.collection.on('remove', this.removeCard, this);
   },
   addCard: function(card) {
     var cardView = null;
@@ -224,6 +217,9 @@ var HandView = Backbone.View.extend({
       cardView = new CardView({model: card, reversed: false});
     }
     this.$el.append(cardView.render().el);
+  },
+  removeCard: function(card) {
+    $('#' + ownId + '-' + card.id).remove();
   },
   render: function() {
     this.collection.forEach(this.addCard, this);
@@ -246,6 +242,26 @@ var TurnView = Backbone.View.extend({
   endTurn: function() {
     socket.emit('end-turn');
   }
+});
+
+var BattlefieldView = Backbone.View.extend({
+  render: function() {
+  },
+
+  clear: function() {
+    $('#battlefield').html('');
+  },
+
+  addPlayer: function(playerId) {
+    $('#battlefield').prepend('<div class="' + playerId + '"><ul class="ground"></ul></div>');
+  },
+
+  addCard: function(data) {
+    console.log('Drawing card', data);
+    var card = new Card(data.card);
+    var cardView = new CardView({model: card, reversed: false})
+    $('#battlefield .' + data.player.id + ' .ground').append(cardView.render().el);
+  },
 });
 
 $(document).ready(function() {
