@@ -77,6 +77,7 @@ socket.on('hands', function (data) {
 });
 
 socket.on('turn', function (data) {
+  alert('Your turn!');
   console.log('Your turn. Current mana:', data);
   turnView.onTurn();
 });
@@ -231,6 +232,9 @@ var HandView = Backbone.View.extend({
 });
 
 var TurnView = Backbone.View.extend({
+  events: {
+    'click': 'endTurn'
+  },
   onTurn: function() {
     $('#end-turn').show();
     $('#enemy-turn').hide();
@@ -238,12 +242,15 @@ var TurnView = Backbone.View.extend({
   enemyTurn: function(id) {
     $('#end-turn').hide();
     $('#enemy-turn').show();
+  },
+  endTurn: function() {
+    socket.emit('end-turn');
   }
 });
 
 $(document).ready(function() {
   battlefieldView = new BattlefieldView();
-  turnView = new TurnView()
+  turnView = new TurnView({el: '#end-turn'})
 });
 
 </script>
