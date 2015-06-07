@@ -22,7 +22,8 @@ var socket = io('http://127.0.0.1:3000'),
     ownHand = null,
     ownHandView = null,
     opponentHand = null,
-    opponentHandView = null;
+    opponentHandView = null,
+    manaView = null;
 
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
@@ -82,6 +83,7 @@ socket.on('turn', function (data) {
   alert('Your turn!');
   console.log('Your turn. Current mana:', data);
   turnView.onTurn();
+  manaView.setMana(data, 0, true);
 });
 
 socket.on('wait', function (data) {
@@ -99,6 +101,9 @@ socket.on('drawed-card', function (data) {
   var card = ownHand.get(data.card.id);
   ownHand.remove(card);
   battlefieldView.addCard(data);
+  if (data.player.id === ownId) {
+    manaView.setMana(data.mana, data.usedMana, true);
+  }
 });
 
 socket.on('battle', function (data) {
@@ -245,9 +250,6 @@ var TurnView = Backbone.View.extend({
 });
 
 var BattlefieldView = Backbone.View.extend({
-  render: function() {
-  },
-
   clear: function() {
     $('#battlefield').html('');
   },
@@ -257,16 +259,31 @@ var BattlefieldView = Backbone.View.extend({
   },
 
   addCard: function(data) {
-    console.log('Drawing card', data);
     var card = new Card(data.card);
     var cardView = new CardView({model: card, reversed: false})
     $('#battlefield .' + data.player.id + ' .ground').append(cardView.render().el);
-  },
+  }
+});
+
+var ManaView = Backbone.View.extend({
+  setMana: function(total, used, own) {
+    var element = (own) ? '#you' : '#opponent';
+    for (var i=1; i <= total; i++) {
+      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').removeClass('used');
+      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').addClass('available');
+    }
+    for (var i=1; i <= used; i++) {
+      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').removeClass('available');
+      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').addClass('used');
+    }
+    $(element + ' > .util > .mana > label').html(String(total - used) + "/" + String(total));
+  }
 });
 
 $(document).ready(function() {
   battlefieldView = new BattlefieldView();
   turnView = new TurnView({el: '#end-turn'})
+  manaView = new ManaView();
 });
 
 </script>
@@ -285,13 +302,41 @@ $(document).ready(function() {
       <div class="util small-8 columns">
         <ul class="hand"></ul>
       </div>
-      <div class="util small-2 columns"></div>
+      <div class="util small-2 columns">
+        <div class="mana">
+          <label>1/1</label>
+          <span name="1"></span>
+          <span name="2"></span>
+          <span name="3"></span>
+          <span name="4"></span>
+          <span name="5"></span>
+          <span name="6"></span>
+          <span name="7"></span>
+          <span name="8"></span>
+          <span name="9"></span>
+          <span name="10"></span>
+        </div>
+      </div>
     </div>
 
     <div id="battlefield"></div>
 
     <div id="you" class="row">
-      <div class="util small-2 columns"></div>
+      <div class="util small-2 columns">
+        <div class="mana">
+          <span name="10"></span>
+          <span name="9"></span>
+          <span name="8"></span>
+          <span name="7"></span>
+          <span name="6"></span>
+          <span name="5"></span>
+          <span name="4"></span>
+          <span name="3"></span>
+          <span name="2"></span>
+          <span name="1"></span>
+          <label></label>
+        </div>
+      </div>
       <div class="util small-8 columns">
         <ul class="hand"></ul>
       </div>

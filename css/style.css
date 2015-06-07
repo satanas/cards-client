@@ -20,6 +20,7 @@ hr {
 
 .util {
   height: 160px;
+  padding: 0;
   border: 1px solid #ccc;
 }
 
@@ -101,4 +102,33 @@ ul.ground > li.card {
 
 #opponent > .util > .deck {
   background-color: #ff6767;
+}
+
+.mana {
+  width: 20px;
+}
+
+#opponent > .util > .mana {
+  left: 110px;
+  position: relative;
+}
+
+.mana > span {
+  height: 12px;
+  width: 12px;
+  display: block;
+  margin: 2px;
+}
+
+.mana > span.available {
+  background-color: #c600ff;
+}
+
+.mana > span.used {
+  background-color: #ccc;
+}
+
+.mana > label {
+  font-size: 12px;
+  display: block;
 }
