@@ -8,6 +8,8 @@
 <script src="lib/underscore-1.8.3.js"></script>
 <script src="lib/backbone-1.2.0.js"></script>
 <script src="lib/hogan-3.0.1.js"></script>
+<script src="models/card.js"></script>
+<script src="models/hand.js"></script>
 <script src="views/turn.js"></script>
 <script src="views/mana.js"></script>
 <link rel="stylesheet" href="css/foundation.css" />
@@ -153,28 +155,6 @@ socket.on('card-used', function (data) {
 
 socket.on('invalid-op', function (data) {
   console.log('Invalid operation. You can not do that');
-});
-
-// Models
-
-var Card = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    name: 'Foo',
-    mana: 1,
-    attack: 0,
-    health: 0,
-    sick: true,
-    drawed: false,
-    reversed: false
-  },
-  unsick: function() {
-    this.set({'sick': false});
-  }
-});
-
-var Hand = Backbone.Collection.extend({
-  model: Card
 });
 
 // Views
