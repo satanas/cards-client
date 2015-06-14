@@ -75,6 +75,10 @@ ul.ground > li.card[data-sick="true"] {
   border: 1px solid #0f0;
 }
 
+ul.ground > li.card.attackable {
+  border: 1px solid #f00 !important;
+}
+
 #you > .util > .face {
   z-index: 1;
   width: 120px;

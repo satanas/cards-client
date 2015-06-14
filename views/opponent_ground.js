@@ -4,7 +4,7 @@ var OpponentGround = Backbone.View.extend({
     this.collection.on('remove', this.removeCard, this);
   },
   addCard: function(card) {
-    var cardView = new CardView({model: card, reversed: false});
+    var cardView = new CardView({model: card, reversed: false, opponent: true});
     this.$el.append(cardView.render().el);
   },
   removeCard: function(card) {

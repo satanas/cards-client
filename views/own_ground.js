@@ -12,7 +12,6 @@ var OwnGround = Backbone.View.extend({
   dragEnter: function(e) {
     var event = e.originalEvent;
     var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    console.log('drag enter', data);
     if (!data.drawed) {
       this.$el.css('border', '1px dashed #000');
       e.preventDefault();
@@ -31,7 +30,6 @@ var OwnGround = Backbone.View.extend({
   dropCard: function(e) {
     var event = e.originalEvent;
     var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    console.log('drop', data);
     this.$el.css('border', 'none');
     if (!data.drawed) {
       socket.emit('draw', data.id);
