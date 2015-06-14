@@ -99,7 +99,7 @@ socket.on('wait', function (data) {
 
 socket.on('unsick', function (data) {
   console.log('Card', data.card.id, 'from player', data.player.id, 'is ready to be used');
-  battlefieldView.unsickCard(data);
+  battlefield[data.player.id].get(data.card.id).unsick();
 });
 
 socket.on('drawed-card', function (data) {
@@ -183,12 +183,11 @@ var CardView = Backbone.View.extend({
   },
   initialize: function(options) {
     this.reversed = options.reversed;
+    this.model.on('change', this.render, this);
   },
   render: function() {
-    var html = null;
-    if (this.reversed) {
-      html = '';
-    } else {
+    var html = '';
+    if (!this.reversed) {
       this.$el.attr('data-drawed', this.model.get('drawed'));
       this.$el.attr('data-sick', this.model.get('sick'));
       this.$el.attr('data-card-id', this.model.get('id'));
