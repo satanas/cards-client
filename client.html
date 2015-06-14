@@ -13,6 +13,10 @@
 <script src="models/warriors.js"></script>
 <script src="views/turn.js"></script>
 <script src="views/mana.js"></script>
+<script src="views/card.js"></script>
+<script src="views/hand.js"></script>
+<script src="views/own_ground.js"></script>
+<script src="views/opponent_ground.js"></script>
 <link rel="stylesheet" href="css/foundation.css" />
 <link rel="stylesheet" href="css/normalize.css" />
 <link rel="stylesheet" href="css/style.css" />
@@ -167,148 +171,6 @@ socket.on('card-used', function (data) {
 
 socket.on('invalid-op', function (data) {
   console.log('Invalid operation. You can not do that');
-});
-
-
-var CardView = Backbone.View.extend({
-  tagName: 'li',
-  className: 'card',
-  attributes: {
-    draggable: true,
-  },
-  events: {
-    'click': 'draw',
-    'dragstart': 'dragStart',
-    'dragend': 'dragEnd'
-  },
-  initialize: function(options) {
-    this.reversed = options.reversed;
-    this.model.on('change', this.render, this);
-  },
-  render: function() {
-    var html = '';
-    if (!this.reversed) {
-      this.$el.attr('data-drawed', this.model.get('drawed'));
-      this.$el.attr('data-sick', this.model.get('sick'));
-      this.$el.attr('data-card-id', this.model.get('id'));
-      this.$el.attr('id', ownId + "-" + this.model.get('id'));
-
-      html = '<div class="mana">' + this.model.get('mana') + '</div>' +
-        '<div class="name">' + this.model.get('name') + '</div>' +
-        '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
-    }
-    this.$el.html(html);
-    return this;
-  },
-  draw: function() {
-    if (this.reversed) return;
-    if (this.drawed) return;
-    if (!inTurn) return;
-
-    socket.emit('draw', this.model.get('id'));
-  },
-  dragStart: function(e) {
-    var event = e.originalEvent;
-    var data = {
-      'id': this.model.get('id'),
-      'drawed': this.model.get('drawed'),
-      'sick': this.model.get('sick')
-    };
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData("text/plain", JSON.stringify(data));
-  },
-  dragEnd: function(e) {
-  }
-});
-
-var HandView = Backbone.View.extend({
-  initialize: function(options) {
-    this.opponent = options.opponent,
-    this.collection.on('add', this.addCard, this);
-    this.collection.on('remove', this.removeCard, this);
-  },
-  addCard: function(card) {
-    var cardView = null;
-    if (this.opponent) {
-      cardView = new CardView({model: card, reversed: true});
-    } else {
-      cardView = new CardView({model: card, reversed: false});
-    }
-    this.$el.append(cardView.render().el);
-  },
-  removeCard: function(card) {
-    $('#' + ownId + '-' + card.id).remove();
-  },
-  render: function() {
-    this.collection.forEach(this.addCard, this);
-    return this;
-  }
-});
-
-var OwnGround = Backbone.View.extend({
-  initialize: function() {
-    this.collection.on('add', this.addCard, this);
-    this.collection.on('remove', this.removeCard, this);
-  },
-  events: {
-    'dragenter': 'dragEnter',
-    'dragover': 'dragOver',
-    'dragleave': 'dragLeave',
-    'drop': 'dropCard'
-  },
-  dragEnter: function(e) {
-    var event = e.originalEvent;
-    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    console.log('drag enter', data);
-    if (!data.drawed) {
-      this.$el.css('border', '1px dashed #000');
-      e.preventDefault();
-      return false;
-    }
-  },
-  dragOver: function(e) {
-    e.preventDefault();
-    return false;
-  },
-  dragLeave: function(e) {
-    this.$el.css('border', 'none');
-    e.preventDefault();
-    return false;
-  },
-  dropCard: function(e) {
-    var event = e.originalEvent;
-    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    console.log('drop', data);
-    this.$el.css('border', 'none');
-    if (!data.drawed) {
-      socket.emit('draw', data.id);
-      e.preventDefault();
-      return false;
-    }
-  },
-  addCard: function(card) {
-    var cardView = new CardView({model: card, reversed: false});
-    this.$el.append(cardView.render().el);
-  },
-  removeCard: function(card) {
-    this.$el.remove('li[data-card-id="' + card.id + '"]');
-    console.log('removing card', 'li[data-card-id="' + card.id + '"]');
-  }
-});
-
-var OpponentGround = Backbone.View.extend({
-  initialize: function() {
-    this.collection.on('add', this.addCard, this);
-    this.collection.on('remove', this.removeCard, this);
-  },
-  addCard: function(card) {
-    var cardView = new CardView({model: card, reversed: false});
-    this.$el.append(cardView.render().el);
-  },
-  removeCard: function(card) {
-    this.$el.remove('li[data-card-id="' + card.id + '"]');
-    console.log('removing card', 'li[data-card-id="' + card.id + '"]');
-  }
 });
 
 $(document).ready(function() {
