@@ -3,6 +3,15 @@ hr {
   padding: 0;
 }
 
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
 #application {
   width: 800px;
   height: 600px;
@@ -22,6 +31,10 @@ hr {
   height: 160px;
   padding: 0;
   border: 1px solid #ccc;
+}
+
+.card {
+  cursor: move;
 }
 
 ul.hand, ul.ground {
@@ -58,7 +71,7 @@ ul.ground > li.card {
   position: relative;
 }
 
-ul.ground > li.card.sick {
+ul.ground > li.card[data-sick="true"] {
   border: 1px solid #0f0;
 }
 
