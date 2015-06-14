@@ -8,6 +8,8 @@
 <script src="lib/underscore-1.8.3.js"></script>
 <script src="lib/backbone-1.2.0.js"></script>
 <script src="lib/hogan-3.0.1.js"></script>
+<script src="views/turn.js"></script>
+<script src="views/mana.js"></script>
 <link rel="stylesheet" href="css/foundation.css" />
 <link rel="stylesheet" href="css/normalize.css" />
 <link rel="stylesheet" href="css/style.css" />
@@ -15,24 +17,23 @@
 <script>
 var socket = io('http://127.0.0.1:3000'),
     battlefield = {},
-    players = {},
+    hands = {},
+
     ownId = null,
+    opponentId = null,
     inTurn = false,
     battlefieldView = null,
-    ownHand = null,
-    ownHandView = null,
-    opponentHand = null,
-    opponentHandView = null,
     manaView = null;
+
+    // Unintialized Views
+    ownHand = null,
+    opponentHand = null,
 
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
   ownId = data;
-  ownHand = new Hand();
-  ownHandView = new HandView({collection: ownHand, el:'#you > .util > ul', opponent: false});
-  players[ownId] = {
-    hand: ownHand
-  }
+  hands[ownId] = new Hand();
+  ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
   battlefieldView.clear();
   battlefieldView.addPlayer(data);
 });
@@ -46,12 +47,9 @@ socket.on('ready', function (data) {
 
 socket.on('opponents', function (data) {
   console.log('Opponents:', data);
-  var opponentId = data;
-  opponentHand = new Hand();
-  opponentHandView = new HandView({collection: opponentHand, el:'#opponent > .util > ul', opponent: true});
-  players[opponentId] = {
-    hand: opponentHand
-  }
+  opponentId = data[0];
+  hands[opponentId] = new Hand();
+  opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   battlefieldView.addPlayer(opponentId);
 });
 
@@ -59,19 +57,13 @@ socket.on('hands', function (data) {
   Object.keys(data).forEach(function(key) {
     if (key === 'you') {
       data['you']['hand'].forEach(function(d) {
-        var card = new Card({
-          id: d.id,
-          mana: d.mana,
-          name: d.name,
-          attack: d.attack,
-          health: d.health
-        });
-        ownHand.add(card);
+        var card = new Card(d);
+        hands[ownId].add(card);
       });
     } else {
       for (var i=0; i < data[key]['count']; i++) {
         var card = new Card({});
-        opponentHand.add(card);
+        hands[opponentId].add(card);
       }
     }
   });
@@ -172,7 +164,12 @@ var Card = Backbone.Model.extend({
     mana: 1,
     attack: 0,
     health: 0,
-    sick: true
+    sick: true,
+    drawed: false,
+    reversed: false
+  },
+  unsick: function() {
+    this.set({'sick': false});
   }
 });
 
@@ -185,20 +182,27 @@ var Hand = Backbone.Collection.extend({
 var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
+  attributes: {
+    draggable: true,
+  },
   events: {
-    'click': 'draw'
+    'click': 'draw',
+    'dragstart': 'dragStart',
+    'dragend': 'dragEnd'
   },
   initialize: function(options) {
     this.reversed = options.reversed;
-    this.drawed = false;
   },
   render: function() {
     var html = null;
     if (this.reversed) {
       html = '';
     } else {
+      this.$el.attr('data-drawed', this.model.get('drawed'));
+      this.$el.attr('data-sick', this.model.get('sick'));
+      this.$el.attr('data-card-id', this.model.get('id'));
       this.$el.attr('id', ownId + "-" + this.model.get('id'));
-      this.$el.addClass('sick');
+
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
         '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
@@ -211,8 +215,19 @@ var CardView = Backbone.View.extend({
     if (this.drawed) return;
     if (!inTurn) return;
 
-    this.drawed = true;
     socket.emit('draw', this.model.get('id'));
+  },
+  dragStart: function(e) {
+    var event = e.originalEvent;
+    var data = {
+      'id': this.model.get('id'),
+      'drawed': this.model.get('drawed'),
+      'sick': this.model.get('sick')
+    };
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData("text/plain", JSON.stringify(data));
+  },
+  dragEnd: function(e) {
   }
 });
 
@@ -240,29 +255,19 @@ var HandView = Backbone.View.extend({
   }
 });
 
-var TurnView = Backbone.View.extend({
-  events: {
-    'click': 'endTurn'
-  },
-  onTurn: function() {
-    $('#end-turn').show();
-    $('#enemy-turn').hide();
-  },
-  enemyTurn: function(id) {
-    $('#end-turn').hide();
-    $('#enemy-turn').show();
-  },
-  endTurn: function() {
-    socket.emit('end-turn');
-  }
-});
-
 var BattlefieldView = Backbone.View.extend({
   clear: function() {
     $('#battlefield').html('');
   },
   addPlayer: function(playerId) {
     $('#battlefield').prepend('<div class="' + playerId + '"><ul class="ground"></ul></div>');
+    if (playerId === ownId) {
+      var ground = $('#battlefield .' + playerId + ' .ground');
+      ground.on('dragenter', this.dragEnter);
+      ground.on('dragover', this.dragOver);
+      ground.on('dragleave', this.dragLeave);
+      ground.on('drop', this.dropCard);
+    }
   },
   addCard: function(data) {
     var card = new Card(data.card);
@@ -271,22 +276,77 @@ var BattlefieldView = Backbone.View.extend({
   },
   unsickCard: function(data) {
     $('#' + data.player.id + '-' + data.card.id).removeClass('sick');
+  },
+  dropCard: function(e) {
+    var event = e.originalEvent;
+    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+    e.target.style.border = "none";
+    if (!data.drawed) {
+      var cardId = data.id;
+      e.preventDefault();
+      socket.emit('draw', cardId);
+      return false;
+    }
+  },
+  dragEnter: function(e) {
+    var event = e.originalEvent;
+    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+    if (!data.drawed) {
+      e.target.style.border = "1px dashed #000";
+      e.preventDefault();
+      return false;
+    }
+  },
+  dragOver: function(e) {
+    //e.preventDefault();
+    //return false;
+  },
+  dragLeave: function(e) {
+    e.target.style.border = "none";
+    e.preventDefault();
+    return false;
   }
 });
 
-var ManaView = Backbone.View.extend({
-  setMana: function(total, used, own) {
-    var element = (own) ? '#you' : '#opponent';
-    for (var i=1; i <= total; i++) {
-      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').removeClass('used');
-      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').addClass('available');
+var ControlledGroundView = Backbone.View.extend({
+  addCard: function(data) {
+    var card = new Card(data.card);
+    var cardView = new CardView({model: card, reversed: false})
+    $('#battlefield .' + data.player.id + ' .ground').append(cardView.render().el);
+  },
+  unsickCard: function(data) {
+    $('#' + data.player.id + '-' + data.card.id).removeClass('sick');
+  },
+  dropCard: function(e) {
+    var event = e.originalEvent;
+    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+    e.target.style.border = "none";
+    if (!data.drawed) {
+      var cardId = data.id;
+      e.preventDefault();
+      socket.emit('draw', cardId);
+      return false;
     }
-    for (var i=1; i <= used; i++) {
-      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').removeClass('available');
-      $(element + ' > .util > .mana > span[name="' + String(i) + '"]').addClass('used');
+  },
+  dragEnter: function(e) {
+    var event = e.originalEvent;
+    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+    if (!data.drawed) {
+      e.target.style.border = "1px dashed #000";
+      e.preventDefault();
+      return false;
     }
-    $(element + ' > .util > .mana > label').html(String(total - used) + "/" + String(total));
+  },
+  dragOver: function(e) {
+    //e.preventDefault();
+    //return false;
+  },
+  dragLeave: function(e) {
+    e.target.style.border = "none";
+    e.preventDefault();
+    return false;
   }
+
 });
 
 $(document).ready(function() {
