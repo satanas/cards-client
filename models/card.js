@@ -7,9 +7,25 @@ var Card = Backbone.Model.extend({
     health: 0,
     sick: true,
     drawed: false,
-    reversed: false
+    reversed: false,
+    used: false,
+    attacker: false,
+    defender: false,
+    playerId: null
   },
-  unsick: function() {
-    this.set({'sick': false});
+  setSick: function(value) {
+    this.set({'sick': value});
+  },
+  setUsed: function(value) {
+    this.set({'used': value});
+  },
+  setPlayerId: function(playerId) {
+    this.set({'playerId': playerId});
+  },
+  setAttacker: function(value) {
+    this.set({'attacker': value});
+  },
+  setDefender: function(value) {
+    this.set({'defender': value});
   }
 });
