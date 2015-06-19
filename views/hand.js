@@ -18,6 +18,9 @@ var HandView = Backbone.View.extend({
     var playerId = card.get('playerId');
     $('li[data-player-id="' + playerId + '"][data-card-id="' + cardId + '"]').remove();
   },
+  removeUnknownCard: function(playerId) {
+    $('li[data-player-id="' + playerId + '"]')[0].remove();
+  },
   render: function() {
     this.collection.forEach(this.addCard, this);
     return this;

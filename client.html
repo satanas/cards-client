@@ -124,6 +124,9 @@ socket.on('drawed-card', function (data) {
   var card = hands[data.player.id].get(data.card.id);
   console.log(data, card);
   hands[data.player.id].remove(card);
+  if ((data.player.id === opponentId) && (card === undefined)) {
+    opponentHand.removeUnknownCard(opponentId);
+  }
   card = new Card(data.card);
   card.setPlayerId(data.player.id);
   battlefield[data.player.id].add(card);
