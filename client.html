@@ -30,7 +30,9 @@ var socket = io('http://127.0.0.1:3000'),
     opponentId = null,
     inTurn = false,
     battlefieldView = null,
-    manaView = null;
+    manaView = null,
+    attacker = null,
+    defender = null,
 
     // Unintialized Views
     ownHand = null,
@@ -75,11 +77,13 @@ socket.on('hands', function (data) {
     if (key === 'you') {
       data['you']['hand'].forEach(function(d) {
         var card = new Card(d);
+        card.set({'playerId': ownId});
         hands[ownId].add(card);
       });
     } else {
       for (var i=0; i < data[key]['count']; i++) {
         var card = new Card({});
+        card.set({'playerId': opponentId});
         hands[opponentId].add(card);
       }
     }
@@ -89,6 +93,15 @@ socket.on('hands', function (data) {
 
 socket.on('turn', function (data) {
   inTurn = true;
+  attacker = null;
+  defender = null;
+  _.keys(battlefield, function(key) {
+    console.log(key);
+    battlefield[key].each(function(card) {
+      console.log('unusing', key, card);
+      card.setUsed(false);
+    });
+  });
   alert('Your turn!');
   console.log('Your turn. Current mana:', data);
   turnView.onTurn();
@@ -103,14 +116,17 @@ socket.on('wait', function (data) {
 
 socket.on('unsick', function (data) {
   console.log('Card', data.card.id, 'from player', data.player.id, 'is ready to be used');
-  battlefield[data.player.id].get(data.card.id).unsick();
+  battlefield[data.player.id].get(data.card.id).setSick(false);
 });
 
 socket.on('drawed-card', function (data) {
   console.log('Player', data.player, 'drawed card', String(data.card.id) + '. ' + String(data.mana - data.usedMana), 'mana remaining');
   var card = hands[data.player.id].get(data.card.id);
+  console.log(data, card);
   hands[data.player.id].remove(card);
-  battlefield[data.player.id].add(new Card(data.card));
+  card = new Card(data.card);
+  card.setPlayerId(data.player.id);
+  battlefield[data.player.id].add(card);
 
   if (data.player.id === ownId) {
     manaView.setMana(data.mana, data.usedMana, true);
@@ -234,6 +250,7 @@ $(document).ready(function() {
       </div>
       <div class="util small-2 columns">
         <div class="controls top">
+          <button id="action-turn" class="button round warning">Action</button>
           <button id="end-turn" class="button round success">End turn</button>
         </div>
         <div class="deck"></div>
