@@ -3,6 +3,20 @@ hr {
   padding: 0;
 }
 
+body {
+  cursor: default;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+body .attackable {
+  cursor: 'images/attack.cur';
+}
+
 [draggable] {
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -66,17 +80,28 @@ ul.ground > li.card {
   height: 123px;
   width: 80px;
   float: left;
-  border: 1px solid #ccc;
+  border: 1px solid #000;
+  background-color: none;
   top: 8px;
   position: relative;
 }
 
 ul.ground > li.card[data-sick="true"] {
+  border: 1px solid #ddd;
+  background-color: #eee;
+}
+
+ul.ground > li.card[data-used="true"] {
+  border: 1px solid #eee;
+  background-color: none;
+}
+
+ul.ground > li.card[data-attacker="true"] {
   border: 1px solid #0f0;
 }
 
-ul.ground > li.card.attackable {
-  border: 1px solid #f00 !important;
+ul.ground > li.card[data-defender="true"] {
+  border: 1px solid #f00;
 }
 
 #you > .util > .face {
@@ -90,7 +115,7 @@ ul.ground > li.card.attackable {
   height: 24px;
 }
 
-#end-turn, #enemy-turn {
+#end-turn, #enemy-turn, #action-turn {
   display: none;
   padding: 4px;
   font-size: 12px;
