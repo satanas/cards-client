@@ -14,7 +14,9 @@ var HandView = Backbone.View.extend({
     this.$el.append(cardView.render().el);
   },
   removeCard: function(card) {
-    $('#' + ownId + '-' + card.id).remove();
+    var cardId = card.get('id');
+    var playerId = card.get('playerId');
+    $('li[data-player-id="' + playerId + '"][data-card-id="' + cardId + '"]').remove();
   },
   render: function() {
     this.collection.forEach(this.addCard, this);
