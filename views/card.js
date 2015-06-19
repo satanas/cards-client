@@ -2,12 +2,10 @@ var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
   events: {
-    //'click': 'draw',
+    'dblclick': 'draw',
+    'click': 'action',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
-    'dragenter': 'dragEnter',
-    'dragover': 'dragOver',
-    'drop': 'dropAttack'
   },
   initialize: function(options) {
     this.reversed = options.reversed;
@@ -31,8 +29,15 @@ var CardView = Backbone.View.extend({
       }
       this.$el.attr('data-sick', sick);
       this.$el.attr('data-drawed', drawed);
+      this.$el.attr('data-player-id', this.model.get('playerId'));
       this.$el.attr('data-card-id', this.model.get('id'));
-      this.$el.attr('id', ownId + "-" + this.model.get('id'));
+      this.$el.attr('data-attacker', this.model.get('attacker'));
+      this.$el.attr('data-defender', this.model.get('defender'));
+      var playerId = this.model.get('playerId');
+      if (playerId) {
+        this.$el.attr('id', playerId + "-" + this.model.get('id'));
+        this.$el.attr('data-player-id', playerId);
+      }
 
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
@@ -42,11 +47,50 @@ var CardView = Backbone.View.extend({
     return this;
   },
   draw: function() {
-    if (this.reversed) return;
-    if (this.drawed) return;
+    var reversed = this.model.get('reversed');
+    var drawed = this.model.get('drawed');
+
+    if (reversed) return;
+    if (drawed) return;
     if (!inTurn) return;
 
     socket.emit('draw', this.model.get('id'));
+  },
+  action: function() {
+    var drawed = this.model.get('drawed');
+    if (!drawed) return;
+
+    var cardId = this.$el.attr('data-card-id');
+    var playerId = this.$el.attr('data-player-id');
+    if (playerId === ownId) {
+      battlefield[ownId].each(function(card) {
+        card.setAttacker(false);
+      });
+
+      if (attacker !== null && attacker.cardId === cardId) {
+        attacker = null;
+      } else {
+        attacker = {'playerId': ownId, 'cardId': cardId};
+        this.model.setAttacker(true);
+      }
+    } else {
+      battlefield[ownId].each(function(card) {
+        card.setDefender(false);
+      });
+
+      if (defender !== null && defender.cardId === cardId) {
+        defender = null;
+      } else {
+        defender = {'playerId': playerId, 'cardId': cardId}
+        this.model.setDefender(true);
+      }
+    }
+    if (attacker !== null && defender !== null) {
+      turnView.enableAction(true);
+    } else {
+      turnView.enableAction(false);
+    }
+    console.log('battle', attacker, defender);
   },
   dragStart: function(e) {
     var event = e.originalEvent;
@@ -59,38 +103,5 @@ var CardView = Backbone.View.extend({
     event.dataTransfer.setData("text/plain", JSON.stringify(data));
   },
   dragEnd: function(e) {
-  },
-  dragEnter: function(e) {
-    if (!this.opponent) return true;
-
-    var event = e.originalEvent;
-    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    console.log('drag enter in card', data);
-    this.$el.addClass('attackable');
-    e.preventDefault();
-    return false;
-  },
-  dragOver: function(e) {
-    if (!this.opponent) return true;
-    e.preventDefault();
-    return false;
-  },
-  dragLeave: function(e) {
-    console.log('leeeeave');
-    if (!this.opponent) return true;
-    this.$el.removeClass('attackable');
-    e.preventDefault();
-    return false;
-  },
-  dropAttack: function(e) {
-    if (!this.opponent) return true;
-    var event = e.originalEvent;
-    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    console.log('drop', data);
-    this.$el.removeClass('attackable');
-    if (!data.drawed) {
-      e.preventDefault();
-      return false;
-    }
   }
 });
