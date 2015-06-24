@@ -60,8 +60,10 @@ var CardView = Backbone.View.extend({
   action: function() {
     var drawed = this.model.get('drawed');
     var used = this.model.get('used');
+    var sick = this.model.get('sick');
     if (!drawed) return;
     if (used) return;
+    if (sick) return;
 
     var cardId = this.$el.attr('data-card-id');
     var playerId = this.$el.attr('data-player-id');
