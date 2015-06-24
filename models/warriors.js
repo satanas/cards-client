@@ -1,6 +1,8 @@
 var Warriors = Backbone.Collection.extend({
   model: Card,
-  unuseCards: function() {
-    console.log(this, this.each)
+  prepareTurn: function() {
+    this.each(function(card) {
+      card.setUsed(false);
+    });
   }
 });
