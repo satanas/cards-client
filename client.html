@@ -95,14 +95,7 @@ socket.on('turn', function (data) {
   inTurn = true;
   attacker = null;
   defender = null;
-  battlefield[ownId].unuseCards();
-  _.keys(battlefield, function(key) {
-    console.log(key);
-    battlefield[key].each(function(card) {
-      console.log('unusing', key, card);
-      card.setUsed(false);
-    });
-  });
+  battlefield[ownId].prepareTurn();
   alert('Your turn!');
   console.log('Your turn. Current mana:', data);
   turnView.onTurn();
@@ -142,7 +135,7 @@ socket.on('drawed-card', function (data) {
 socket.on('battle', function (data) {
   console.log('battledata', data);
   if (data.attacker.health <= 0) {
-    ownGround.removeCard(data.attacker.card);
+    ownGround.removeCard(data.attacker.card, data.attacker.player);
   } else {
     var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
     card.setHealth(data.attacker.health);
@@ -151,7 +144,7 @@ socket.on('battle', function (data) {
   }
 
   if (data.defender.health <= 0) {
-    opponentGround.removeCard(data.defender.card);
+    opponentGround.removeCard(data.defender.card, data.defender.player);
   } else {
     var card = battlefield[data.defender.player.id].get(data.defender.card.id);
     card.setHealth(data.defender.health);
