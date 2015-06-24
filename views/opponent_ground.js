@@ -8,7 +8,6 @@ var OpponentGround = Backbone.View.extend({
     this.$el.append(cardView.render().el);
   },
   removeCard: function(card) {
-    this.$el.remove('li[data-card-id="' + card.id + '"]');
-    console.log('removing card', 'li[data-card-id="' + card.id + '"]');
+    this.$el[0].remove('li[data-card-id="' + card.id + '"]');
   }
 });

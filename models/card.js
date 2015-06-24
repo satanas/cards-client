@@ -27,5 +27,8 @@ var Card = Backbone.Model.extend({
   },
   setDefender: function(value) {
     this.set({'defender': value});
+  },
+  setHealth: function(value) {
+    this.set({'health': value});
   }
 });

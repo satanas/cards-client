@@ -95,6 +95,7 @@ socket.on('turn', function (data) {
   inTurn = true;
   attacker = null;
   defender = null;
+  battlefield[ownId].unuseCards();
   _.keys(battlefield, function(key) {
     console.log(key);
     battlefield[key].each(function(card) {
@@ -139,12 +140,29 @@ socket.on('drawed-card', function (data) {
 });
 
 socket.on('battle', function (data) {
+  console.log('battledata', data);
+  if (data.attacker.health <= 0) {
+    ownGround.removeCard(data.attacker.card);
+  } else {
+    var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
+    card.setHealth(data.attacker.health);
+    card.setAttacker(false);
+    card.setUsed(true);
+  }
+
+  if (data.defender.health <= 0) {
+    opponentGround.removeCard(data.defender.card);
+  } else {
+    var card = battlefield[data.defender.player.id].get(data.defender.card.id);
+    card.setHealth(data.defender.health);
+    card.setDefender(false);
+  }
   //console.log('Battle between card', data.attacker.card.id, 'from player', data.attacker.player.id, 'and card', data.defender.card.id, 'from player', data.defender.player.id);
-  var attackerStats = ['damage dealt:', data.attacker.damageDealt, 'damage received:', data.attacker.damageReceived].join('');
-  var defenderStats = ['damage dealt:', data.defender.damageDealt, 'damage received:', data.defender.damageReceived].join('');
-  console.log('Battle');
-  console.log('  Attacker: card', data.attacker.card.id, 'from player', data.attacker.player.id, attackerStats);
-  console.log('  Defender: card', data.defender.card.id, 'from player', data.defender.player.id, defenderStats);
+  //var attackerStats = ['damage dealt:', data.attacker.damageDealt, 'damage received:', data.attacker.damageReceived].join('');
+  //var defenderStats = ['damage dealt:', data.defender.damageDealt, 'damage received:', data.defender.damageReceived].join('');
+  //console.log('Battle');
+  //console.log('  Attacker: card', data.attacker.card.id, 'from player', data.attacker.player.id, attackerStats);
+  //console.log('  Defender: card', data.defender.card.id, 'from player', data.defender.player.id, defenderStats);
 });
 
 socket.on('direct-damage', function (data) {

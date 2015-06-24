@@ -2,6 +2,7 @@ var OwnGround = Backbone.View.extend({
   initialize: function() {
     this.collection.on('add', this.addCard, this);
     this.collection.on('remove', this.removeCard, this);
+    this.collection.on('change', this.updateCard, this);
   },
   events: {
     'dragenter': 'dragEnter',
@@ -42,7 +43,9 @@ var OwnGround = Backbone.View.extend({
     this.$el.append(cardView.render().el);
   },
   removeCard: function(card) {
-    this.$el.remove('li[data-card-id="' + card.id + '"]');
-    console.log('removing card', 'li[data-card-id="' + card.id + '"]');
+    this.$el[0].remove('li[data-card-id="' + card.id + '"]');
+  },
+  updateCard: function(a, b) {
+    console.log('updating card', a, b);
   }
 });

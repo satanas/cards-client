@@ -33,6 +33,7 @@ var CardView = Backbone.View.extend({
       this.$el.attr('data-drawed', drawed);
       this.$el.attr('data-attacker', this.model.get('attacker'));
       this.$el.attr('data-defender', this.model.get('defender'));
+      this.$el.attr('data-used', this.model.get('used'));
       var playerId = this.model.get('playerId');
       if (playerId) {
         this.$el.attr('id', playerId + "-" + this.model.get('id'));
@@ -58,7 +59,9 @@ var CardView = Backbone.View.extend({
   },
   action: function() {
     var drawed = this.model.get('drawed');
+    var used = this.model.get('used');
     if (!drawed) return;
+    if (used) return;
 
     var cardId = this.$el.attr('data-card-id');
     var playerId = this.$el.attr('data-player-id');
