@@ -17,6 +17,7 @@ var TurnView = Backbone.View.extend({
   enemyTurn: function(id) {
     $('#end-turn').hide();
     $('#enemy-turn').show();
+    this.enableAction(false);
   },
   endTurn: function() {
     socket.emit('end-turn');
