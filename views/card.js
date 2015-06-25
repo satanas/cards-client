@@ -89,6 +89,7 @@ var CardView = Backbone.View.extend({
       } else {
         defender = {'playerId': playerId, 'cardId': cardId}
         this.model.setDefender(true);
+        opponentPlayer.setDefender(false);
       }
     }
     if (attacker !== null && defender !== null) {

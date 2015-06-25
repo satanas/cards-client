@@ -6,7 +6,6 @@ var PlayerView = Backbone.View.extend({
     this.opponent = options.opponent;
   },
   action: function() {
-    console.log('hail');
     if (this.opponent) {
       var value = false;
 
@@ -15,6 +14,7 @@ var PlayerView = Backbone.View.extend({
       } else {
         defender = {'playerId': opponentId};
         value = true;
+        battlefield[opponentId].clearDefender();
       }
       this.setDefender(value);
 
