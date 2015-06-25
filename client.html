@@ -55,6 +55,8 @@ socket.on('joined', function (data) {
   ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
   ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
   ownPlayer = new PlayerView({opponent: false, el: '#you .util .player'});
+  // FIXME: This must come from the server
+  ownPlayer.setHealth(30);
 });
 
 socket.on('rejected', function (data) {
@@ -75,6 +77,8 @@ socket.on('opponents', function (data) {
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
   opponentPlayer = new PlayerView({opponent: true, el: '#opponent .util .player'});
+  // FIXME: This must come from the server
+  opponentPlayer.setHealth(30);
 });
 
 socket.on('hands', function (data) {
@@ -172,6 +176,11 @@ socket.on('direct-damage', function (data) {
     card.setAttacker(false);
     card.setUsed(true);
   }
+  if (data.player.id === ownId) {
+    ownPlayer.setHealth(data.player.health);
+  } else {
+    opponentPlayer.setHealth(data.player.health);
+  }
 
   if (data.player.health <= 0) {
     console.log('You win');
@@ -258,6 +267,7 @@ $(document).ready(function() {
         </div>
         <div class="player">
           <img src="images/unknown.png" />
+          <label class="health"></label>
         </div>
       </div>
     </div>
@@ -281,6 +291,7 @@ $(document).ready(function() {
         </div>
         <div class="player">
           <img src="images/unknown.png" />
+          <label class="health"></label>
         </div>
       </div>
       <div class="util small-8 columns">

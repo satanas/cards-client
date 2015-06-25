@@ -27,5 +27,8 @@ var PlayerView = Backbone.View.extend({
   },
   setDefender: function(value) {
     this.$el.attr('data-defender', value);
+  },
+  setHealth: function(value) {
+    this.$el.children('.health').html(value);
   }
 });
