@@ -9,5 +9,10 @@ var Warriors = Backbone.Collection.extend({
     this.each(function(card) {
       card.setDefender(false);
     });
+  },
+  clearAttacker: function() {
+    this.each(function(card) {
+      card.setAttacker(false);
+    });
   }
 });
