@@ -101,16 +101,21 @@ socket.on('turn', function (data) {
   attacker = null;
   defender = null;
   battlefield[ownId].prepareTurn();
-  console.log('Your turn. Current mana:', data);
+  battlefield[opponentId].prepareTurn();
   turnView.onTurn();
   manaView.setMana(data, 0, true);
+  console.log('Your turn. Current mana:', data);
   alert('Your turn!');
 });
 
 socket.on('wait', function (data) {
-  console.log('You have to wait your turn. Current mana:', data);
   inTurn = false;
+  attacker = null;
+  defender = null;
+  battlefield[ownId].prepareTurn();
+  battlefield[opponentId].prepareTurn();
   turnView.enemyTurn();
+  console.log('You have to wait your turn. Current mana:', data);
 });
 
 socket.on('unsick', function (data) {
