@@ -4,7 +4,13 @@ var TurnView = Backbone.View.extend({
   },
   initialize: function() {
     $('#action-turn').on('click', function(e) {
-      socket.emit('attack', {
+      var action = '';
+      if (defender.hasOwnProperty('cardId')) {
+        action = 'attack';
+      } else {
+        action = 'direct-attack';
+      }
+      socket.emit(action, {
         'attacker': attacker,
         'defender': defender
       });
