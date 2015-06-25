@@ -45,7 +45,7 @@ var socket = io('http://127.0.0.1:3000'),
 
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
-  ownId = data;
+  ownId = data.player.id;
   hands[ownId] = new Hand();
   battlefield[ownId] = new Warriors();
 
@@ -55,8 +55,7 @@ socket.on('joined', function (data) {
   ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
   ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
   ownPlayer = new PlayerView({opponent: false, el: '#you .util .player'});
-  // FIXME: This must come from the server
-  ownPlayer.setHealth(30);
+  ownPlayer.setHealth(data.player.health);
 });
 
 socket.on('rejected', function (data) {
@@ -68,7 +67,7 @@ socket.on('ready', function (data) {
 
 socket.on('opponents', function (data) {
   console.log('Opponents:', data);
-  opponentId = data[0];
+  opponentId = data[0].player.id;
   hands[opponentId] = new Hand();
   battlefield[opponentId] = new Warriors();
 
@@ -77,8 +76,7 @@ socket.on('opponents', function (data) {
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
   opponentPlayer = new PlayerView({opponent: true, el: '#opponent .util .player'});
-  // FIXME: This must come from the server
-  opponentPlayer.setHealth(30);
+  opponentPlayer.setHealth(data[0].player.health);
 });
 
 socket.on('hands', function (data) {
