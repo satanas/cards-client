@@ -155,16 +155,24 @@ socket.on('battle', function (data) {
     card.setHealth(data.defender.health);
     card.setDefender(false);
   }
-  //console.log('Battle between card', data.attacker.card.id, 'from player', data.attacker.player.id, 'and card', data.defender.card.id, 'from player', data.defender.player.id);
-  //var attackerStats = ['damage dealt:', data.attacker.damageDealt, 'damage received:', data.attacker.damageReceived].join('');
-  //var defenderStats = ['damage dealt:', data.defender.damageDealt, 'damage received:', data.defender.damageReceived].join('');
-  //console.log('Battle');
-  //console.log('  Attacker: card', data.attacker.card.id, 'from player', data.attacker.player.id, attackerStats);
-  //console.log('  Defender: card', data.defender.card.id, 'from player', data.defender.player.id, defenderStats);
 });
 
 socket.on('direct-damage', function (data) {
-  console.log([data.attacker.damageDealt, 'pt(s) of damage dealt to', data.player.id].join(' '));
+  console.log('direct-damage', data);
+  if (data.attacker.health <= 0) {
+    ownGround.removeCard(data.attacker.card, data.attacker.player);
+  } else {
+    var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
+    card.setHealth(data.attacker.health);
+    card.setAttacker(false);
+    card.setUsed(true);
+  }
+
+  if (data.player.health <= 0) {
+    console.log('You win');
+  } else {
+    opponentPlayer.setDefender(false);
+  }
 });
 
 socket.on('leader-defeated', function (data) {
