@@ -100,7 +100,7 @@ ul.ground > li.card[data-attacker="true"] {
   border: 1px solid #0f0;
 }
 
-ul.ground > li.card[data-defender="true"] {
+ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
   border: 1px solid #f00;
 }
 
@@ -150,31 +150,42 @@ ul.ground > li.card[data-defender="true"] {
   background-color: #ff6767;
 }
 
-.mana {
+.mana-meter {
   width: 20px;
+  float: left;
 }
 
-#opponent > .util > .mana {
-  left: 110px;
-  position: relative;
+.mana-meter > label {
+  font-size: 12px;
+  display: block;
 }
 
-.mana > span {
+.mana-meter > span {
   height: 12px;
   width: 12px;
   display: block;
   margin: 2px;
 }
 
-.mana > span.available {
+.mana-meter > span.available {
   background-color: #c600ff;
 }
 
-.mana > span.used {
+.mana-meter > span.used {
   background-color: #ccc;
 }
 
-.mana > label {
-  font-size: 12px;
-  display: block;
+#opponent > .util > .mana {
+  position: relative;
+}
+
+.player {
+  float: left;
+  width: 80px;
+  height: 100px;
+}
+
+.player img {
+  width: 80px;
+  height: 100px;
 }

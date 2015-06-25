@@ -15,6 +15,7 @@
 <script src="views/mana.js"></script>
 <script src="views/card.js"></script>
 <script src="views/hand.js"></script>
+<script src="views/player.js"></script>
 <script src="views/own_ground.js"></script>
 <script src="views/opponent_ground.js"></script>
 <link rel="stylesheet" href="css/foundation.css" />
@@ -29,16 +30,18 @@ var socket = io('http://127.0.0.1:3000'),
     ownId = null,
     opponentId = null,
     inTurn = false,
-    battlefieldView = null,
     manaView = null,
     attacker = null,
     defender = null,
 
+
     // Unintialized Views
     ownHand = null,
-    opponentHand = null,
     ownGround = null,
-    opponentGround = null;
+    ownPlayer = null,
+    opponentHand = null,
+    opponentGround = null,
+    opponentPlayer = null;
 
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
@@ -51,6 +54,7 @@ socket.on('joined', function (data) {
 
   ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
   ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
+  ownPlayer = new PlayerView({opponent: false, el: '#you .util .player'});
 });
 
 socket.on('rejected', function (data) {
@@ -70,6 +74,7 @@ socket.on('opponents', function (data) {
 
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
+  opponentPlayer = new PlayerView({opponent: true, el: '#opponent .util .player'});
 });
 
 socket.on('hands', function (data) {
@@ -96,10 +101,10 @@ socket.on('turn', function (data) {
   attacker = null;
   defender = null;
   battlefield[ownId].prepareTurn();
-  alert('Your turn!');
   console.log('Your turn. Current mana:', data);
   turnView.onTurn();
   manaView.setMana(data, 0, true);
+  alert('Your turn!');
 });
 
 socket.on('wait', function (data) {
@@ -225,18 +230,21 @@ $(document).ready(function() {
         <ul class="hand"></ul>
       </div>
       <div class="util small-2 columns">
-        <div class="mana">
-          <label>1/1</label>
-          <span name="1"></span>
-          <span name="2"></span>
-          <span name="3"></span>
-          <span name="4"></span>
-          <span name="5"></span>
-          <span name="6"></span>
-          <span name="7"></span>
-          <span name="8"></span>
-          <span name="9"></span>
+        <div class="mana-meter">
           <span name="10"></span>
+          <span name="9"></span>
+          <span name="8"></span>
+          <span name="7"></span>
+          <span name="6"></span>
+          <span name="5"></span>
+          <span name="4"></span>
+          <span name="3"></span>
+          <span name="2"></span>
+          <span name="1"></span>
+          <label>0/0</label>
+        </div>
+        <div class="player">
+          <img src="images/unknown.png" />
         </div>
       </div>
     </div>
@@ -245,7 +253,7 @@ $(document).ready(function() {
 
     <div id="you" class="row">
       <div class="util small-2 columns">
-        <div class="mana">
+        <div class="mana-meter">
           <span name="10"></span>
           <span name="9"></span>
           <span name="8"></span>
@@ -256,7 +264,10 @@ $(document).ready(function() {
           <span name="3"></span>
           <span name="2"></span>
           <span name="1"></span>
-          <label></label>
+          <label>0/0</label>
+        </div>
+        <div class="player">
+          <img src="images/unknown.png" />
         </div>
       </div>
       <div class="util small-8 columns">
