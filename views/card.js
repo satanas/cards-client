@@ -61,17 +61,15 @@ var CardView = Backbone.View.extend({
     var drawed = this.model.get('drawed');
     var used = this.model.get('used');
     var sick = this.model.get('sick');
+    var playerId = this.$el.attr('data-player-id');
+
     if (!drawed) return;
-    if (used) return;
-    // Only for attackers
-    //if (sick) return;
+    if (used && playerId === ownId) return;
+    if (sick && playerId === ownId) return;
 
     var cardId = this.$el.attr('data-card-id');
-    var playerId = this.$el.attr('data-player-id');
     if (playerId === ownId) {
-      battlefield[ownId].each(function(card) {
-        card.setAttacker(false);
-      });
+      battlefield[ownId].clearAttacker();
 
       if (attacker !== null && attacker.cardId === cardId) {
         attacker = null;
@@ -80,9 +78,7 @@ var CardView = Backbone.View.extend({
         this.model.setAttacker(true);
       }
     } else {
-      battlefield[ownId].each(function(card) {
-        card.setDefender(false);
-      });
+      battlefield[opponentId].clearDefender();
 
       if (defender !== null && defender.cardId === cardId) {
         defender = null;
