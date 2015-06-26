@@ -105,8 +105,9 @@ socket.on('turn', function (data) {
   battlefield[ownId].prepareTurn();
   battlefield[opponentId].prepareTurn();
   turnView.onTurn();
-  manaView.setMana(data, 0, true);
-  console.log('Your turn. Current mana:', data);
+  manaView.setMana(data.mana, 0, true);
+  console.log('Your turn. Current mana:', data.mana, data.card);
+  hands[ownId].add(new Card(data.card));
   alert('Your turn!');
 });
 
@@ -117,7 +118,10 @@ socket.on('wait', function (data) {
   battlefield[ownId].prepareTurn();
   battlefield[opponentId].prepareTurn();
   turnView.enemyTurn();
-  console.log('You have to wait your turn. Current mana:', data);
+  console.log('You have to wait your turn. Current mana:', data.mana);
+  var card = new Card({});
+  card.set({'playerId': data.card_for});
+  hands[data.card_for].add(card);
 });
 
 socket.on('unsick', function (data) {
