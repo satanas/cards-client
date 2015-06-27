@@ -39,17 +39,20 @@ var CardView = Backbone.View.extend({
         this.$el.attr('id', playerId + "-" + this.model.get('id'));
         this.$el.attr('data-player-id', playerId);
       }
-      var attrs = ''
+      var abilities = ''
       if (this.model.get('rush')) {
-        attrs += '<span>Rush</span>';
+        abilities += '<span>Rush</span>';
       }
       if (this.model.get('overwhelm')) {
-        attrs += '<span>Overwhelm</span>';
+        abilities += '<span>Overwhelm</span>';
+      }
+      if (this.model.get('firstStrike')) {
+        abilities += '<span>First strike</span>';
       }
 
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
-        '<div class="abilities">' + attrs + '</div>' +
+        '<div class="abilities">' + abilities + '</div>' +
         '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
     }
     this.$el.html(html);
