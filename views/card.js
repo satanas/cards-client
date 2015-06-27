@@ -49,6 +49,9 @@ var CardView = Backbone.View.extend({
       if (this.model.get('firstStrike')) {
         abilities += '<span>First strike</span>';
       }
+      if (this.model.get('deathtouch')) {
+        abilities += '<span>Deathtouch</span>';
+      }
 
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
