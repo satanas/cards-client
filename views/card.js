@@ -45,6 +45,7 @@ var CardView = Backbone.View.extend({
         '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
     }
     this.$el.html(html);
+    //this.$el.hide().fadeIn('slow');
     return this;
   },
   draw: function() {

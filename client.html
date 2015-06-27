@@ -84,7 +84,6 @@ socket.on('hands', function (data) {
     if (key === 'you') {
       data['you']['hand'].forEach(function(d) {
         var card = new Card(d);
-        card.set({'playerId': ownId});
         hands[ownId].add(card);
       });
     } else {
@@ -138,7 +137,6 @@ socket.on('drawed-card', function (data) {
     opponentHand.removeUnknownCard(opponentId);
   }
   card = new Card(data.card);
-  card.setPlayerId(data.player.id);
   battlefield[data.player.id].add(card);
 
   if (data.player.id === ownId) {
