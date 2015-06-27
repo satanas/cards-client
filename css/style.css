@@ -133,6 +133,8 @@ ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
 
 .card .stats {
   font-size: 14px;
+  top: 80px;
+  position: absolute;
 }
 
 .deck {
@@ -200,4 +202,9 @@ ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
   font-size: 13px;
   border-radius: 20px;
   padding: 4px 7px;
+}
+
+.abilities {
+  font-size: 8px;
+  color: red;
 }
