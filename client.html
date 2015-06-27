@@ -8,6 +8,7 @@
 <script src="lib/underscore-1.8.3.js"></script>
 <script src="lib/backbone-1.2.0.js"></script>
 <script src="lib/hogan-3.0.1.js"></script>
+<script src="lib/foundation.min.js"></script>
 <script src="models/card.js"></script>
 <script src="models/hand.js"></script>
 <script src="models/warriors.js"></script>
@@ -209,6 +210,7 @@ socket.on('lose', function (data) {
 // Errors
 socket.on('no-mana', function (data) {
   console.log('You don\'t have enough mana to play that card');
+  showMessage('No mana', "You don't have enough mana to play that card");
 });
 
 socket.on('no-turn', function (data) {
@@ -221,6 +223,7 @@ socket.on('no-player', function (data) {
 
 socket.on('card-not-found', function (data) {
   console.log('That card is not yours');
+  showMessage('Card not found', "That card does not exist here");
 });
 
 socket.on('card-sick', function (data) {
@@ -234,6 +237,12 @@ socket.on('card-used', function (data) {
 socket.on('invalid-op', function (data) {
   console.log('Invalid operation. You can not do that');
 });
+
+function showMessage(title, message) {
+  $("#modal-title").html(title);
+  $("#modal-description").html(message);
+  $('#modal-message').foundation('reveal', 'open');
+}
 
 $(document).ready(function() {
   turnView = new TurnView({el: '#end-turn'})
@@ -311,6 +320,12 @@ $(document).ready(function() {
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="modal-message" class="reveal-modal tiny" data-reveal aria-labelledby="modal-title" aria-hidden="true" role="dialog">
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
   </div>
 </body>
 
