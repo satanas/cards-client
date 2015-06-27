@@ -164,6 +164,15 @@ socket.on('battle', function (data) {
     card.setHealth(data.defender.health);
     card.setDefender(false);
   }
+
+  if (data.player) {
+    console.log('Player', data.player.id, 'has been hit with extra damage of', data.player.damageReceived);
+    if (data.player.id === ownId) {
+      ownPlayer.setHealth(data.player.health);
+    } else {
+      opponentPlayer.setHealth(data.player.health);
+    }
+  }
 });
 
 socket.on('direct-damage', function (data) {
@@ -178,13 +187,9 @@ socket.on('direct-damage', function (data) {
   }
   if (data.player.id === ownId) {
     ownPlayer.setHealth(data.player.health);
+    ownPlayer.setDefender(false);
   } else {
     opponentPlayer.setHealth(data.player.health);
-  }
-
-  if (data.player.health <= 0) {
-    console.log('You win');
-  } else {
     opponentPlayer.setDefender(false);
   }
 });

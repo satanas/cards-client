@@ -43,6 +43,9 @@ var CardView = Backbone.View.extend({
       if (this.model.get('rush')) {
         attrs += '<span>Rush</span>';
       }
+      if (this.model.get('overwhelm')) {
+        attrs += '<span>Overwhelm</span>';
+      }
 
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
