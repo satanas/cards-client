@@ -196,15 +196,15 @@ socket.on('direct-damage', function (data) {
 });
 
 socket.on('leader-defeated', function (data) {
-  console.log('Leader', data, 'have been defeated');
+  showMessage('Leader defeated', 'Leader', data, 'have been defeated');
 });
 
 socket.on('win', function (data) {
-  console.log('You have won');
+  showMessage('Victory', 'You have won');
 });
 
 socket.on('lose', function (data) {
-  console.log('You have been defeated');
+  showMessage('Defeat', 'You have lost');
 });
 
 // Errors
