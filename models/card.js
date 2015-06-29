@@ -30,5 +30,10 @@ var Card = Backbone.Model.extend({
   },
   setHealth: function(value) {
     this.set({'health': value});
+  },
+  receiveDamage: function(value) {
+    var health = this.get('health');
+    this.set({'health': health - value});
+    this.trigger('damageReceived', {damage: value});
   }
 });

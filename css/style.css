@@ -124,7 +124,12 @@ ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
 }
 
 .card .mana {
-  font-size: 13px;
+  font-size: 10px;
+  color: white;
+  background-color: #c600ff;
+  width: 14px;
+  border-radius: 20px;
+  padding: 0 4px;
 }
 
 .card .name {
@@ -207,4 +212,18 @@ ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
 .abilities {
   font-size: 8px;
   color: red;
+}
+
+.damage-done {
+  position: absolute;
+  top: 20%;
+  left: 35%;
+  width: 40px;
+  height: 40px;
+  background-color: yellow;
+  border-radius: 20px;
+  padding: 3px 8px;
+  color: red;
+  font-weight: bold;
+  font-size: 20px;
 }

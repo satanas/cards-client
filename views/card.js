@@ -6,6 +6,7 @@ var CardView = Backbone.View.extend({
     'click': 'action',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
+    'damageReceived': 'doDamage'
   },
   initialize: function(options) {
     this.reversed = options.reversed;
@@ -121,5 +122,12 @@ var CardView = Backbone.View.extend({
     event.dataTransfer.setData("text/plain", JSON.stringify(data));
   },
   dragEnd: function(e) {
+  },
+  doDamage: function(damage) {
+    this.$el.append('<div class="damage-done">-' + damage + '</div>');
+    setTimeout.call(this, this.removeDamage, 600);
+  },
+  removeDamage: function() {
+    this.$el.children('.damage-done').fadeOut(400);
   }
 });
