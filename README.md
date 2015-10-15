@@ -7,6 +7,6 @@ the cards-client folder and inside, execute:
 python -m SimpleHTTPServer
 ```
 
-Then go to http://localhost:8000. Open two different tabs and play around.
+Then go to [http://localhost:8000](http://localhost:8000). Open two different tabs and play around.
 
 I'm thinking to add this files (client) into the same server code to server everything from one single place.
