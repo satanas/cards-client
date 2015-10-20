@@ -1,0 +1,22 @@
+{
+  "name": "magic-client",
+  "version": "0.0.0",
+  "description": "Cards client",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/satanas/cards-client.git"
+  },
+  "author": "Wil Alvarez",
+  "bugs": {
+    "url": "https://github.com/satanas/cards-client/issues"
+  },
+  "homepage": "https://github.com/satanas/cards-client",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-serve": "^1.2.0"
+  }
+}
