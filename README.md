@@ -1,6 +1,6 @@
 # Cards client
 
-## Instalation
+## Installation
 
 There is no installation for the game but for the webserver. Execute:
 
