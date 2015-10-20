@@ -1,12 +1,19 @@
 # Cards client
 
-This still needs love. There is no installation and there is no webserver to serve the client.html, so I just go to
-the cards-client folder and inside, execute:
+## Instalation
+
+There is no installation for the game but for the webserver. Execute:
 
 ```
-python -m SimpleHTTPServer
+npm install
+```
+
+## Running
+
+```
+gulp serve
 ```
 
 Then go to [http://localhost:8000](http://localhost:8000). Open two different tabs and play around.
 
-I'm thinking to add these files (client) into the cards-server code to server everything from one single place.
+I'm thinking to add this client into the cards-server code to server everything from one single place.
