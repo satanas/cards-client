@@ -45,6 +45,21 @@ var socket = io('http://127.0.0.1:3000'),
     opponentGround = null,
     opponentPlayer = null;
 
+function newMatch() {
+  console.log('requesting new match');
+  socket.emit('new-match');
+}
+
+function joinMatch() {
+  var matchId = $('#match-id').val();
+  console.log('joining match ' + matchId);
+  socket.emit('join-match', matchId);
+}
+
+socket.on('match-created', function(matchId) {
+  console.log('matchId', matchId);
+});
+
 socket.on('joined', function (data) {
   console.log('Your ID:', data);
   ownId = data.player.id;
@@ -342,6 +357,10 @@ $(document).ready(function() {
     <p id="modal-description"></p>
     <a class="close-reveal-modal" aria-label="Close">&#215;</a>
   </div>
+
+  <input type="text" id="match-id"/>
+  <button onclick="newMatch()">New Match</button>
+  <button onclick="joinMatch()">Join Match</button>
 </body>
 
 </html>
