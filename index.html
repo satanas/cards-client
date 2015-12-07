@@ -61,6 +61,14 @@ socket.on('match-created', function(matchId) {
 });
 
 socket.on('joined', function (data) {
+  console.log('joined', data);
+});
+
+socket.on('new-player', function (data) {
+  console.log('new player joined', data);
+});
+
+socket.on('player', function (data) {
   console.log('Your ID:', data);
   ownId = data.player.id;
   hands[ownId] = new Hand();
@@ -79,7 +87,9 @@ socket.on('rejected', function (data) {
   console.log('Rejected:', data);
 });
 
-socket.on('ready', function (data) {
+socket.on('match-started', function (data) {
+  console.log('Match started');
+  $('#battlefield').html('');
 });
 
 socket.on('opponents', function (data) {
