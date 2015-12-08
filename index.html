@@ -162,8 +162,8 @@ socket.on('unsick', function (data) {
   battlefield[data.player.id].get(data.card.id).setSick(false);
 });
 
-socket.on('drawed-card', function (data) {
-  console.log('Player', data.player.id, 'drawed card', String(data.card.id) + '. ' + String(data.totalMana - data.usedMana), 'mana remaining');
+socket.on('played-card', function (data) {
+  console.log('Player', data.player.id, 'played card', String(data.card.id) + '. ' + String(data.totalMana - data.usedMana), 'mana remaining');
   var card = hands[data.player.id].get(data.card.id);
   hands[data.player.id].remove(card);
   if ((data.player.id === opponentId) && (card === undefined)) {

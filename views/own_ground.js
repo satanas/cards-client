@@ -19,6 +19,8 @@ var OwnGround = Backbone.View.extend({
     //  e.preventDefault();
     //  return false;
     //}
+    e.preventDefault();
+    return false;
   },
   dragOver: function(e) {
     e.preventDefault();
@@ -34,7 +36,7 @@ var OwnGround = Backbone.View.extend({
     var data = JSON.parse(event.dataTransfer.getData("text/plain"));
     this.$el.css('border', 'none');
     if (!data.drawed) {
-      socket.emit('draw-card', data.id);
+      socket.emit('play-card', data.id);
       e.preventDefault();
       return false;
     }
