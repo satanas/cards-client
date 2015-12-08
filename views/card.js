@@ -69,7 +69,7 @@ var CardView = Backbone.View.extend({
 
     if (reversed) return;
     if (drawed) return;
-    if (!inTurn) return;
+    //if (!inTurn) return;
 
     socket.emit('draw', this.model.get('id'));
   },
@@ -113,13 +113,14 @@ var CardView = Backbone.View.extend({
   },
   dragStart: function(e) {
     var event = e.originalEvent;
-    var data = {
+    var data = JSON.stringify({
       'id': this.model.get('id'),
       'drawed': this.model.get('drawed'),
       'sick': this.model.get('sick')
-    };
+    });
+    console.log('moving', data, typeof(data));
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData("text/plain", JSON.stringify(data));
+    event.dataTransfer.setData("text/plain", data); //JSON.stringify(data));
   },
   dragEnd: function(e) {
   },
