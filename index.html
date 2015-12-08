@@ -68,21 +68,6 @@ socket.on('new-player', function (data) {
   console.log('new player joined', data);
 });
 
-socket.on('player', function (data) {
-  console.log('Your ID:', data);
-  ownId = data.player.id;
-  hands[ownId] = new Hand();
-  battlefield[ownId] = new Warriors();
-
-  $('#battlefield').html('');
-  $('#battlefield').prepend('<div class="' + ownId + '"><ul class="ground"></ul></div>');
-
-  ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
-  ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
-  ownPlayer = new PlayerView({opponent: false, el: '#you .util .player'});
-  ownPlayer.setHealth(data.player.health);
-});
-
 socket.on('rejected', function (data) {
   console.log('Rejected:', data);
 });
@@ -92,9 +77,23 @@ socket.on('match-started', function (data) {
   $('#battlefield').html('');
 });
 
+socket.on('player', function (data) {
+  console.log('Your ID:', data);
+  ownId = data.player.id;
+  hands[ownId] = new Hand();
+  battlefield[ownId] = new Warriors();
+
+  $('#battlefield').prepend('<div class="' + ownId + '"><ul class="ground"></ul></div>');
+
+  ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
+  ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
+  ownPlayer = new PlayerView({opponent: false, el: '#you .util .player'});
+  ownPlayer.setHealth(data.player.health);
+});
+
 socket.on('opponents', function (data) {
   console.log('Opponents:', data);
-  opponentId = data[0].player.id;
+  opponentId = data.opponents[0].player.id;
   hands[opponentId] = new Hand();
   battlefield[opponentId] = new Warriors();
 
@@ -103,23 +102,19 @@ socket.on('opponents', function (data) {
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
   opponentPlayer = new PlayerView({opponent: true, el: '#opponent .util .player'});
-  opponentPlayer.setHealth(data[0].player.health);
+  opponentPlayer.setHealth(data.opponents[0].player.health);
+
+  for (var i=0; i < data.opponents[0].player.cards; i++) {
+    var card = new Card({});
+    card.set({'playerId': opponentId});
+    hands[opponentId].add(card);
+  }
 });
 
-socket.on('hands', function (data) {
-  Object.keys(data).forEach(function(key) {
-    if (key === 'you') {
-      data['you']['hand'].forEach(function(d) {
-        var card = new Card(d);
-        hands[ownId].add(card);
-      });
-    } else {
-      for (var i=0; i < data[key]['count']; i++) {
-        var card = new Card({});
-        card.set({'playerId': opponentId});
-        hands[opponentId].add(card);
-      }
-    }
+socket.on('hand', function (data) {
+  data.player.hand.forEach(function(d) {
+    var card = new Card(d);
+    hands[ownId].add(card);
   });
   console.log('Hands:', data);
 });
