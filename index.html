@@ -119,6 +119,10 @@ socket.on('hand', function (data) {
   console.log('Hands:', data);
 });
 
+socket.on('battlefield', function (data) {
+  console.log('battlefield', data);
+});
+
 socket.on('turn', function (data) {
   inTurn = true;
   attacker = null;
@@ -144,10 +148,10 @@ socket.on('wait', function (data) {
   battlefield[opponentId].prepareTurn();
   turnView.enemyTurn();
   console.log('You have to wait your turn. Current mana:', data.mana);
-  if (data.card_for) {
+  if (data.player.new_card) {
     var card = new Card({});
-    card.set({'playerId': data.card_for});
-    hands[data.card_for].add(card);
+    card.set({'playerId': data.player.id});
+    hands[data.player.id].add(card);
   } else {
     $('#opponent > .util > .deck').css('background-color', '#fff');
   }
