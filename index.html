@@ -247,6 +247,16 @@ socket.on('lose', function (data) {
 });
 
 // Errors
+
+socket.on('match-not-found', function (data) {
+  console.log('Match not found');
+});
+
+socket.on('match-ended', function (data) {
+  console.log('Match ended');
+  showMessage('Match ended', "You can't access the match because it ended");
+});
+
 socket.on('no-mana', function (data) {
   console.log('You don\'t have enough mana to play that card');
   showMessage('No mana', "You don't have enough mana to play that card");
