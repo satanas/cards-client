@@ -121,6 +121,14 @@ socket.on('hand', function (data) {
 
 socket.on('battlefield', function (data) {
   console.log('battlefield', data);
+  for (var playerId in data.players) {
+    data.players[playerId].cards.forEach(function(c) {
+      console.log('Card', c.id, 'from player', playerId, 'has been updated');
+      var card = battlefield[playerId].get(c.id);
+      card.setSick(c.sick);
+      card.setUsed(c.used);
+    });
+  }
 });
 
 socket.on('turn', function (data) {
@@ -155,11 +163,6 @@ socket.on('wait', function (data) {
   } else {
     $('#opponent > .util > .deck').css('background-color', '#fff');
   }
-});
-
-socket.on('unsick', function (data) {
-  console.log('Card', data.card.id, 'from player', data.player.id, 'is ready to be used');
-  battlefield[data.player.id].get(data.card.id).setSick(false);
 });
 
 socket.on('played-card', function (data) {
