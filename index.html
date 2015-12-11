@@ -166,7 +166,7 @@ socket.on('wait', function (data) {
 });
 
 socket.on('played-card', function (data) {
-  console.log('Player', data.player.id, 'played card', String(data.card.id) + '. ' + String(data.totalMana - data.usedMana), 'mana remaining');
+  console.log('Player', data.player.id, 'played card', data.card + ' and has' + String(data.totalMana - data.usedMana), 'mana remaining');
   var card = hands[data.player.id].get(data.card.id);
   hands[data.player.id].remove(card);
   if ((data.player.id === opponentId) && (card === undefined)) {
