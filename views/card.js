@@ -2,7 +2,6 @@ var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
   events: {
-    'dblclick': 'draw',
     'click': 'action',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
@@ -19,9 +18,9 @@ var CardView = Backbone.View.extend({
     this.$el.attr('data-card-id', this.model.get('id'));
     if (!this.reversed) {
       var sick = this.model.get('sick');
-      var drawed = this.model.get('drawed');
+      var played = this.model.get('played');
 
-      if (!drawed) {
+      if (!played) {
         this.$el.attr('draggable', true);
       } else {
         if (sick) {
@@ -31,7 +30,7 @@ var CardView = Backbone.View.extend({
         }
       }
       this.$el.attr('data-sick', sick);
-      this.$el.attr('data-drawed', drawed);
+      this.$el.attr('data-played', played);
       this.$el.attr('data-attacker', this.model.get('attacker'));
       this.$el.attr('data-defender', this.model.get('defender'));
       this.$el.attr('data-used', this.model.get('used'));
@@ -63,23 +62,13 @@ var CardView = Backbone.View.extend({
     //this.$el.hide().fadeIn('slow');
     return this;
   },
-  draw: function() {
-    var reversed = this.model.get('reversed');
-    var drawed = this.model.get('drawed');
-
-    if (reversed) return;
-    if (drawed) return;
-    //if (!inTurn) return;
-
-    socket.emit('draw', this.model.get('id'));
-  },
   action: function() {
-    var drawed = this.model.get('drawed');
+    var played = this.model.get('played');
     var used = this.model.get('used');
     var sick = this.model.get('sick');
     var playerId = this.$el.attr('data-player-id');
 
-    if (!drawed) return;
+    if (!played) return;
     if (used && playerId === ownId) return;
     if (sick && playerId === ownId) return;
 
@@ -115,7 +104,7 @@ var CardView = Backbone.View.extend({
     var event = e.originalEvent;
     var data = JSON.stringify({
       'id': this.model.get('id'),
-      'drawed': this.model.get('drawed'),
+      'played': this.model.get('played'),
       'sick': this.model.get('sick')
     });
     console.log('moving', data, typeof(data));

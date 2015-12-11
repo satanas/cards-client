@@ -6,7 +6,7 @@ var Card = Backbone.Model.extend({
     attack: 0,
     health: 0,
     sick: true,
-    drawed: false,
+    played: false,
     reversed: false,
     used: false,
     attacker: false,
