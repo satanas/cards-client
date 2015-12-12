@@ -106,7 +106,6 @@ var CardView = Backbone.View.extend({
       'played': this.model.get('played'),
       'sick': this.model.get('sick')
     });
-    console.log('moving', data, typeof(data));
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData("text/plain", data); //JSON.stringify(data));
   },

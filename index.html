@@ -52,7 +52,7 @@ function newMatch() {
 
 function joinMatch() {
   var matchId = $('#match-id').val();
-  console.log('joining match ' + matchId);
+  console.log('Joining match ' + matchId);
   socket.emit('join-match', matchId);
 }
 
@@ -61,7 +61,7 @@ socket.on('match-created', function(matchId) {
 });
 
 socket.on('joined', function (data) {
-  console.log('joined', data);
+  console.log('Joined');
 });
 
 socket.on('new-player', function (data) {
@@ -120,7 +120,7 @@ socket.on('hand', function (data) {
 });
 
 socket.on('battlefield', function (data) {
-  console.log('battlefield', data);
+  //console.log('battlefield', data);
   for (var playerId in data.players) {
     data.players[playerId].cards.forEach(function(c) {
       console.log('Card', c.id, 'from player', playerId, 'has been updated');
@@ -139,7 +139,7 @@ socket.on('turn', function (data) {
   battlefield[opponentId].prepareTurn();
   turnView.onTurn();
   manaView.setMana(data.player.totalMana, 0, true);
-  console.log('Your turn. Current mana:', data.player.totalMana, data.player.card);
+  console.log('Your turn. Current mana:', data.player.totalMana + '. New card:', data.player.card.id);
   if (data.player.card) {
     hands[ownId].add(new Card(data.player.card));
   } else {
@@ -166,7 +166,7 @@ socket.on('wait', function (data) {
 });
 
 socket.on('played-card', function (data) {
-  console.log('Player', data.player.id, 'played card', data.card + ' and has' + String(data.totalMana - data.usedMana), 'mana remaining');
+  console.log('Player', data.player.id, 'played card', data.card.id + ' and has', String(data.totalMana - data.usedMana), 'mana remaining');
   var card = hands[data.player.id].get(data.card.id);
   hands[data.player.id].remove(card);
   if ((data.player.id === opponentId) && (card === undefined)) {
@@ -183,8 +183,9 @@ socket.on('played-card', function (data) {
 });
 
 socket.on('battle', function (data) {
-  console.log('battledata', data);
+  //console.log('battledata', data);
   if (data.attacker.card.health <= 0) {
+    console.log('Attacker card', data.attacker.card.id, 'has died');
     ownGround.removeCard(data.attacker.card, data.attacker.player, data.attacker.card.damageReceived);
   } else {
     var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
@@ -194,6 +195,7 @@ socket.on('battle', function (data) {
   }
 
   if (data.defender.card.health <= 0) {
+    console.log('Defender card', data.attacker.card.id, 'has died');
     opponentGround.removeCard(data.defender.card, data.defender.player, data.defender.card.damageReceived);
   } else {
     var card = battlefield[data.defender.player.id].get(data.defender.card.id);
@@ -214,24 +216,28 @@ socket.on('battle', function (data) {
 });
 
 socket.on('direct-damage', function (data) {
-  console.log('direct-damage', data);
-  if (data.attacker.card.health <= 0) {
-    ownGround.removeCard(data.attacker.card, data.attacker.player);
-  } else {
-    var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
-    card.receiveDamage(data.attacker.card.damageReceived);
-    card.setAttacker(false);
-    card.setUsed(true);
-  }
+  //console.log('direct-damage', data);
+  //if (data.attacker.card.health <= 0) {
+  //  ownGround.removeCard(data.attacker.card, data.attacker.player);
+  //} else {
+  var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
+  card.receiveDamage(data.attacker.card.damageReceived);
+  card.setAttacker(false);
+  card.setUsed(true);
+  //}
+  var subject;
   if (data.defender.player.id === ownId) {
+    subject = 'You have received';
     ownPlayer.setHealth(data.defender.player.health);
     ownPlayer.setDefender(false);
     ownPlayer.doDamage(data.defender.player.damageReceived);
   } else {
+    subject = 'Player ' + data.defender.player.id + ' has received';
     opponentPlayer.setHealth(data.defender.player.health);
     opponentPlayer.setDefender(false);
     opponentPlayer.doDamage(data.defender.player.damageReceived);
   }
+  console.log(subject, data.defender.player.damageReceived, 'points of direct damage');
 });
 
 socket.on('leader-defeated', function (data) {
