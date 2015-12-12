@@ -92,8 +92,9 @@ socket.on('player', function (data) {
 });
 
 socket.on('opponents', function (data) {
-  console.log('Opponents:', data);
-  opponentId = data.opponents[0].player.id;
+  var opponent = data.opponents[0].player;
+  console.log('Opponents:', opponent);
+  opponentId = opponent.id;
   hands[opponentId] = new Hand();
   battlefield[opponentId] = new Warriors();
 
@@ -102,7 +103,8 @@ socket.on('opponents', function (data) {
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
   opponentPlayer = new PlayerView({opponent: true, el: '#opponent .util .player'});
-  opponentPlayer.setHealth(data.opponents[0].player.health);
+  opponentPlayer.setHealth(opponent.health);
+  manaView.setMana(opponent.totalMana, opponent.usedMana, false);
 
   for (var i=0; i < data.opponents[0].player.cards; i++) {
     var card = new Card({});
@@ -138,7 +140,7 @@ socket.on('turn', function (data) {
   battlefield[ownId].prepareTurn();
   battlefield[opponentId].prepareTurn();
   turnView.onTurn();
-  manaView.setMana(data.player.totalMana, 0, true);
+  manaView.setMana(data.player.totalMana, data.player.usedMana, true);
   console.log('Your turn. Current mana:', data.player.totalMana + '. New card:', data.player.card.id);
   if (data.player.card) {
     hands[ownId].add(new Card(data.player.card));
@@ -155,6 +157,7 @@ socket.on('wait', function (data) {
   battlefield[ownId].prepareTurn();
   battlefield[opponentId].prepareTurn();
   turnView.enemyTurn();
+  manaView.setMana(data.player.totalMana, data.player.usedMana, false);
   console.log('You have to wait your turn. New card for ' + data.player.id);
   if (data.player.new_card) {
     var card = new Card({});
