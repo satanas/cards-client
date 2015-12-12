@@ -184,56 +184,53 @@ socket.on('played-card', function (data) {
 
 socket.on('battle', function (data) {
   console.log('battledata', data);
-  if (data.attacker.health <= 0) {
-    ownGround.removeCard(data.attacker.card, data.attacker.player, data.attacker.damageReceived);
+  if (data.attacker.card.health <= 0) {
+    ownGround.removeCard(data.attacker.card, data.attacker.player, data.attacker.card.damageReceived);
   } else {
     var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
-    //card.setHealth(data.attacker.health);
-    card.receiveDamage(data.attacker.damageReceived);
+    card.receiveDamage(data.attacker.card.damageReceived);
     card.setAttacker(false);
     card.setUsed(true);
   }
 
-  if (data.defender.health <= 0) {
-    opponentGround.removeCard(data.defender.card, data.defender.player, data.defender.damageReceived);
+  if (data.defender.card.health <= 0) {
+    opponentGround.removeCard(data.defender.card, data.defender.player, data.defender.card.damageReceived);
   } else {
     var card = battlefield[data.defender.player.id].get(data.defender.card.id);
-    //card.setHealth(data.defender.health);
-    card.receiveDamage(data.defender.damageReceived);
+    card.receiveDamage(data.defender.card.damageReceived);
     card.setDefender(false);
   }
 
-  if (data.player) {
-    console.log('Player', data.player.id, 'has been hit with extra damage of', data.player.damageReceived);
-    if (data.player.id === ownId) {
-      ownPlayer.setHealth(data.player.health);
-      ownPlayer.doDamage(data.player.damageReceived);
+  if (data.defender.player.damageReceived > 0) {
+    console.log('Player', data.defender.player.id, 'has been hit with extra damage of', data.defender.player.damageReceived);
+    if (data.defender.player.id === ownId) {
+      //ownPlayer.setHealth(data.defender.player.health);
+      ownPlayer.doDamage(data.defender.player.damageReceived);
     } else {
-      opponentPlayer.setHealth(data.player.health);
-      opponentPlayer.doDamage(data.player.damageReceived);
+      //opponentPlayer.setHealth(data.defender.player.health);
+      opponentPlayer.doDamage(data.defender.player.damageReceived);
     }
   }
 });
 
 socket.on('direct-damage', function (data) {
   console.log('direct-damage', data);
-  if (data.attacker.health <= 0) {
+  if (data.attacker.card.health <= 0) {
     ownGround.removeCard(data.attacker.card, data.attacker.player);
   } else {
     var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
-    //card.setHealth(data.attacker.health);
-    card.receiveDamage(data.attacker.damageReceived);
+    card.receiveDamage(data.attacker.card.damageReceived);
     card.setAttacker(false);
     card.setUsed(true);
   }
-  if (data.player.id === ownId) {
-    ownPlayer.setHealth(data.player.health);
+  if (data.defender.player.id === ownId) {
+    ownPlayer.setHealth(data.defender.player.health);
     ownPlayer.setDefender(false);
-    ownPlayer.doDamage(data.player.damageReceived);
+    ownPlayer.doDamage(data.defender.player.damageReceived);
   } else {
-    opponentPlayer.setHealth(data.player.health);
+    opponentPlayer.setHealth(data.defender.player.health);
     opponentPlayer.setDefender(false);
-    opponentPlayer.doDamage(data.player.damageReceived);
+    opponentPlayer.doDamage(data.defender.player.damageReceived);
   }
 });
 
