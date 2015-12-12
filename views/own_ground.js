@@ -52,7 +52,7 @@ var OwnGround = Backbone.View.extend({
     setTimeout.call(this, this.removeDamage, 600, card, player);
   },
   updateCard: function(a, b) {
-    console.log('updating card', a, b);
+    //console.log('updating card', a, b);
   },
   removeDamage: function(card, player) {
     $('li[data-card-id="' + card.id + '"][data-player-id="' + player.id + '"]').remove();

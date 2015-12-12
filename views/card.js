@@ -98,7 +98,6 @@ var CardView = Backbone.View.extend({
     } else {
       turnView.enableAction(false);
     }
-    console.log('battle', attacker, defender);
   },
   dragStart: function(e) {
     var event = e.originalEvent;
