@@ -247,12 +247,16 @@ socket.on('leader-defeated', function (data) {
   showMessage('Leader defeated', 'Leader', data, 'have been defeated');
 });
 
-socket.on('win', function (data) {
-  showMessage('Victory', 'You have won');
+socket.on('victory', function (data) {
+  if (data.playerId === ownId) {
+    showMessage('Victory', 'You win');
+  }
 });
 
-socket.on('lose', function (data) {
-  showMessage('Defeat', 'You have lost');
+socket.on('defeat', function (data) {
+  if (data.playerId === ownId) {
+    showMessage('Defeat', 'You lose');
+  }
 });
 
 // Errors
