@@ -5,7 +5,10 @@ var CardView = Backbone.View.extend({
     'click': 'action',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
-    'damageReceived': 'doDamage'
+    'damageReceived': 'doDamage',
+    'dragenter': 'dragEnter',
+    'dragover': 'dragOver',
+    'dragleave': 'dragLeave'
   },
   initialize: function(options) {
     this.reversed = options.reversed;
@@ -111,8 +114,16 @@ var CardView = Backbone.View.extend({
     });
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData("text/plain", data); //JSON.stringify(data));
+    //this.$el.css('opacity', '0.4');
+    this.$el.addClass('dragged');
   },
   dragEnd: function(e) {
+    //this.$el.css('opacity', '1');
+    this.$el.removeClass('dragged');
+    this.$el.removeClass('dropable');
+    $('.dropable').each(function(e) {
+      $(this).removeClass('dropable');
+    });
   },
   doDamage: function(damage) {
     this.$el.append('<div class="damage-done">-' + damage + '</div>');
@@ -120,5 +131,29 @@ var CardView = Backbone.View.extend({
   },
   removeDamage: function() {
     this.$el.children('.damage-done').fadeOut(400);
-  }
+  },
+  dragOver: function(e) {
+    var event = e.originalEvent;
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+
+    event.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+    return false;
+  },
+  dragEnter: function(e) {
+    console.log('Receiving drag', this.model.get('id'));
+    //this.$el.css('border-style', 'dashed');
+    this.$el.addClass('dropable');
+    //e.preventDefault();
+    //return false;
+  },
+  dragLeave: function(e) {
+    console.log('Leaving drag', this.model.get('id'));
+    //this.$el.css('border-style', 'solid');
+    this.$el.removeClass('dropable');
+    //e.preventDefault();
+    //return false;
+  },
 });

@@ -49,6 +49,7 @@ body .attackable {
 
 .card {
   cursor: move;
+  background-color: #fff;
 }
 
 ul.hand, ul.ground {
@@ -84,24 +85,35 @@ ul.ground > li.card {
   background-color: none;
   top: 8px;
   position: relative;
+  opacity: 1;
 }
 
 ul.ground > li.card[data-sick="true"] {
-  border: 1px solid #ddd;
+  border-color: #ddd;
   background-color: #eee;
 }
 
 ul.ground > li.card[data-used="true"] {
-  border: 1px solid #eee;
+  border-color: #eee;
   background-color: none;
 }
 
 ul.ground > li.card[data-attacker="true"] {
-  border: 1px solid #0f0;
+  border-color: #0f0;
 }
 
 ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
-  border: 1px solid #f00;
+  border-color: #f00;
+}
+
+ul.ground > li.card.dragged {
+  opacity: 0.4;
+}
+
+ul.ground > li.card.dropable {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: red;
 }
 
 #you > .util > .face {
