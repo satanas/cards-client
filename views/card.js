@@ -114,6 +114,12 @@ var CardView = Backbone.View.extend({
     });
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData("text/plain", data); //JSON.stringify(data));
+
+    if (this.model.get('played')) {
+      event.dataTransfer.setData("in-field", "");
+    } else {
+      event.dataTransfer.setData("in-hand", "");
+    }
     this.$el.addClass('dragged');
   },
   dragEnd: function(e) {
@@ -139,7 +145,19 @@ var CardView = Backbone.View.extend({
     return false;
   },
   dragEnter: function(e) {
-    this.$el.addClass('dropable');
+    var event = e.originalEvent;
+    var dropTarget = event.target;
+    var fromHand = (event.dataTransfer.types.indexOf("in-hand") >= 0) ? true : false;
+    var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
+    var toField = (dropTarget.getAttribute('data-played') === 'true') ? true : false;
+
+    console.log('fromHand', fromHand, "fromField", fromField, 'toField', toField);
+    if (fromHand){
+      console.log('playable card');
+    } else if (toField) {
+      console.log('attack possible');
+      this.$el.addClass('dropable');
+    }
   },
   dragLeave: function(e) {
     this.$el.removeClass('dropable');
