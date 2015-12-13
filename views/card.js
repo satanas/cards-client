@@ -2,13 +2,14 @@ var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
   events: {
-    'click': 'action',
+    //'click': 'action',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
     'damageReceived': 'doDamage',
     'dragenter': 'dragEnter',
     'dragover': 'dragOver',
-    'dragleave': 'dragLeave'
+    'dragleave': 'dragLeave',
+    'drop': 'drop'
   },
   initialize: function(options) {
     this.reversed = options.reversed;
@@ -22,16 +23,7 @@ var CardView = Backbone.View.extend({
     if (!this.reversed) {
       var sick = this.model.get('sick');
       var played = this.model.get('played');
-
-      if (!played) {
-        this.$el.attr('draggable', true);
-      } else {
-        if (sick) {
-          this.$el.removeAttr('draggable');
-        } else {
-          this.$el.attr('draggable', true);
-        }
-      }
+      this.$el.attr('draggable', true);
       this.$el.attr('data-sick', sick);
       this.$el.attr('data-played', played);
       this.$el.attr('data-attacker', this.model.get('attacker'));
@@ -68,6 +60,7 @@ var CardView = Backbone.View.extend({
     //this.$el.hide().fadeIn('slow');
     return this;
   },
+  /*
   action: function() {
     var played = this.model.get('played');
     var used = this.model.get('used');
@@ -105,15 +98,17 @@ var CardView = Backbone.View.extend({
       turnView.enableAction(false);
     }
   },
+  */
   dragStart: function(e) {
     var event = e.originalEvent;
-    var data = JSON.stringify({
+    var data = {
       'id': this.model.get('id'),
+      'playerId': this.model.get('playerId'),
       'played': this.model.get('played'),
       'sick': this.model.get('sick')
-    });
+    };
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData("text/plain", data); //JSON.stringify(data));
+    event.dataTransfer.setData("text/plain", JSON.stringify(data));
 
     if (this.model.get('played')) {
       event.dataTransfer.setData("in-field", "");
@@ -151,7 +146,7 @@ var CardView = Backbone.View.extend({
     var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
     var toField = (dropTarget.getAttribute('data-played') === 'true') ? true : false;
 
-    console.log('fromHand', fromHand, "fromField", fromField, 'toField', toField);
+    console.log('ENTER: fromHand', fromHand, "fromField", fromField, 'toField', toField);
     if (fromHand){
       console.log('playable card');
     } else if (toField) {
@@ -162,4 +157,39 @@ var CardView = Backbone.View.extend({
   dragLeave: function(e) {
     this.$el.removeClass('dropable');
   },
+  drop: function(e) {
+    e.preventDefault();
+    var event = e.originalEvent;
+    var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+
+    var dropTarget = event.target;
+    var fromHand = (event.dataTransfer.types.indexOf("in-hand") >= 0) ? true : false;
+    var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
+    var toField = (dropTarget.getAttribute('data-played') === 'true') ? true : false;
+
+    if (fromField && toField) {
+      if (data.used) {
+        showMessage('Card used', 'This card was already used');
+        return false;
+      }
+      if (data.sick) {
+        showMessage('Card sick', 'This card can not be used until next turn');
+        return false;
+      }
+
+      attacker = {
+        'playerId': data.playerId,
+        'cardId': data.id
+      };
+      defender = {
+        'playerId': dropTarget.getAttribute('data-player-id'),
+        'cardId': dropTarget.getAttribute('data-card-id')
+      };
+      socket.emit('attack', {
+        'attacker': attacker,
+        'defender': defender
+      });
+    }
+    return false;
+  }
 });
