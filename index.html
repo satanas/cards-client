@@ -122,13 +122,21 @@ socket.on('hand', function (data) {
 });
 
 socket.on('battlefield', function (data) {
-  //console.log('battlefield', data);
+  console.log('battlefield', data);
   for (var playerId in data.players) {
     data.players[playerId].cards.forEach(function(c) {
       console.log('Card', c.id, 'from player', playerId, 'has been updated');
       var card = battlefield[playerId].get(c.id);
       card.setSick(c.sick);
       card.setUsed(c.used);
+      if (c.damage.venom > 0) {
+        console.log('venoooom', c.damage.venom, c.health);
+        if (c.health > 0) {
+          card.receiveDamage(c.damage.venom);
+        } else {
+          ownGround.removeCard(card, data.players[playerId], c.damage.venom);
+        }
+      }
     });
   }
 });
@@ -191,6 +199,7 @@ socket.on('battle', function (data) {
     console.log('Attacker card', data.attacker.card.id, 'has died');
     ownGround.removeCard(data.attacker.card, data.attacker.player, data.attacker.card.damageReceived);
   } else {
+    console.log('Attacker card', data.attacker.card.id, 'received', data.attacker.card.damageReceived, 'points of damage');
     var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
     card.receiveDamage(data.attacker.card.damageReceived);
     card.setAttacker(false);
@@ -201,6 +210,7 @@ socket.on('battle', function (data) {
     console.log('Defender card', data.attacker.card.id, 'has died');
     opponentGround.removeCard(data.defender.card, data.defender.player, data.defender.card.damageReceived);
   } else {
+    console.log('Defender card', data.defender.card.id, 'received', data.defender.card.damageReceived, 'points of damage');
     var card = battlefield[data.defender.player.id].get(data.defender.card.id);
     card.receiveDamage(data.defender.card.damageReceived);
     card.setDefender(false);
