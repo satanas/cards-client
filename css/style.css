@@ -116,6 +116,12 @@ ul.ground > li.card.dropable {
   border-color: red;
 }
 
+.player.dropable {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: red;
+}
+
 #you > .util > .face {
   z-index: 1;
   width: 120px;

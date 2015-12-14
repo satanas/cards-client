@@ -2,7 +2,6 @@ var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
   events: {
-    //'click': 'action',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
     'damageReceived': 'doDamage',
@@ -57,7 +56,6 @@ var CardView = Backbone.View.extend({
         '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
     }
     this.$el.html(html);
-    //this.$el.hide().fadeIn('slow');
     return this;
   },
   /*
@@ -146,7 +144,7 @@ var CardView = Backbone.View.extend({
     var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
     var toField = (dropTarget.getAttribute('data-played') === 'true') ? true : false;
 
-    console.log('ENTER: fromHand', fromHand, "fromField", fromField, 'toField', toField);
+    //console.log('ENTER: fromHand', fromHand, "fromField", fromField, 'toField', toField);
     if (fromHand){
       console.log('playable card');
     } else if (toField) {
