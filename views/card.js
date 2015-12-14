@@ -58,45 +58,6 @@ var CardView = Backbone.View.extend({
     this.$el.html(html);
     return this;
   },
-  /*
-  action: function() {
-    var played = this.model.get('played');
-    var used = this.model.get('used');
-    var sick = this.model.get('sick');
-    var playerId = this.$el.attr('data-player-id');
-
-    if (!played) return;
-    if (used && playerId === ownId) return;
-    if (sick && playerId === ownId) return;
-
-    var cardId = this.$el.attr('data-card-id');
-    if (playerId === ownId) {
-      battlefield[ownId].clearAttacker();
-
-      if (attacker !== null && attacker.cardId === cardId) {
-        attacker = null;
-      } else {
-        attacker = {'playerId': ownId, 'cardId': cardId};
-        this.model.setAttacker(true);
-      }
-    } else {
-      battlefield[opponentId].clearDefender();
-
-      if (defender !== null && defender.cardId === cardId) {
-        defender = null;
-      } else {
-        defender = {'playerId': playerId, 'cardId': cardId}
-        this.model.setDefender(true);
-        opponentPlayer.setDefender(false);
-      }
-    }
-    if (attacker !== null && defender !== null) {
-      turnView.enableAction(true);
-    } else {
-      turnView.enableAction(false);
-    }
-  },
-  */
   dragStart: function(e) {
     var event = e.originalEvent;
     var data = {
@@ -144,11 +105,7 @@ var CardView = Backbone.View.extend({
     var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
     var toField = (dropTarget.getAttribute('data-played') === 'true') ? true : false;
 
-    //console.log('ENTER: fromHand', fromHand, "fromField", fromField, 'toField', toField);
-    if (fromHand){
-      console.log('playable card');
-    } else if (toField) {
-      console.log('attack possible');
+    if (fromField && toField) {
       this.$el.addClass('dropable');
     }
   },

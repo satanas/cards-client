@@ -26,7 +26,6 @@ var PlayerView = Backbone.View.extend({
     var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
 
     if (fromField) {
-      console.log('direct attack possible');
       this.$el.addClass('dropable');
     }
   },
