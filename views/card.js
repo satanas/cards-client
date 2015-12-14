@@ -58,6 +58,13 @@ var CardView = Backbone.View.extend({
     this.$el.html(html);
     return this;
   },
+  doDamage: function(damage) {
+    this.$el.append('<div class="damage-done">-' + damage + '</div>');
+    setTimeout.call(this, this.removeDamage, 600);
+  },
+  removeDamage: function() {
+    this.$el.children('.damage-done').fadeOut(400);
+  },
   dragStart: function(e) {
     var event = e.originalEvent;
     var data = {
@@ -76,26 +83,6 @@ var CardView = Backbone.View.extend({
     }
     this.$el.addClass('dragged');
   },
-  dragEnd: function(e) {
-    this.$el.removeClass('dragged');
-    this.$el.removeClass('dropable');
-    $('li.card.dropable').each(function(e) {
-      $(this).removeClass('dropable');
-    });
-  },
-  doDamage: function(damage) {
-    this.$el.append('<div class="damage-done">-' + damage + '</div>');
-    setTimeout.call(this, this.removeDamage, 600);
-  },
-  removeDamage: function() {
-    this.$el.children('.damage-done').fadeOut(400);
-  },
-  dragOver: function(e) {
-    var event = e.originalEvent;
-    e.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-    return false;
-  },
   dragEnter: function(e) {
     var event = e.originalEvent;
     var dropTarget = event.target;
@@ -107,8 +94,21 @@ var CardView = Backbone.View.extend({
       this.$el.addClass('dropable');
     }
   },
+  dragOver: function(e) {
+    var event = e.originalEvent;
+    e.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    return false;
+  },
   dragLeave: function(e) {
     this.$el.removeClass('dropable');
+  },
+  dragEnd: function(e) {
+    this.$el.removeClass('dragged');
+    this.$el.removeClass('dropable');
+    $('li.card.dropable').each(function(e) {
+      $(this).removeClass('dropable');
+    });
   },
   drop: function(e) {
     this.dragEnd();
