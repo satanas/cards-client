@@ -79,7 +79,7 @@ var CardView = Backbone.View.extend({
   dragEnd: function(e) {
     this.$el.removeClass('dragged');
     this.$el.removeClass('dropable');
-    $('.dropable').each(function(e) {
+    $('li.card.dropable').each(function(e) {
       $(this).removeClass('dropable');
     });
   },
@@ -92,10 +92,8 @@ var CardView = Backbone.View.extend({
   },
   dragOver: function(e) {
     var event = e.originalEvent;
-    if (e.preventDefault) {
-      e.preventDefault();
-    }
-    event.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+    e.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
     return false;
   },
   dragEnter: function(e) {
@@ -113,6 +111,7 @@ var CardView = Backbone.View.extend({
     this.$el.removeClass('dropable');
   },
   drop: function(e) {
+    this.dragEnd();
     e.preventDefault();
     var event = e.originalEvent;
     var data = JSON.parse(event.dataTransfer.getData("text/plain"));

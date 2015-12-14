@@ -8,38 +8,51 @@ var OwnGround = Backbone.View.extend({
     'dragenter': 'dragEnter',
     'dragover': 'dragOver',
     'dragleave': 'dragLeave',
+    'dragend': 'dragEnd',
     'drop': 'dropCard'
   },
   dragEnter: function(e) {
     var event = e.originalEvent;
-    //console.log('drag enter', event.dataTransfer.getData("text/plain"));
-    //var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    //if (!data.played) {
-    //  this.$el.css('border', '1px dashed #000');
-    //  e.preventDefault();
-    //  return false;
-    //}
+    var dropTarget = event.target;
+    var fromHand = (event.dataTransfer.types.indexOf("in-hand") >= 0) ? true : false;
+    var toField = (dropTarget.getAttribute('data-played') === 'true') ? true : false;
+
+    if (fromHand && !toField) {
+      this.$el.addClass('dropable');
+    }
     e.preventDefault();
     return false;
   },
   dragOver: function(e) {
+    var event = e.originalEvent;
     e.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
     return false;
   },
   dragLeave: function(e) {
-    this.$el.css('border', 'none');
+    this.$el.removeClass('dropable');
     e.preventDefault();
     return false;
   },
+  dragEnd: function(e) {
+    this.$el.removeClass('dropable');
+    $('ul.ground.dropable').each(function(e) {
+      $(this).removeClass('dropable');
+    });
+  },
   dropCard: function(e) {
+    this.dragEnd();
+    e.preventDefault();
     var event = e.originalEvent;
     var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    this.$el.css('border', 'none');
     if (!data.played) {
       socket.emit('play-card', data.id);
-      e.preventDefault();
-      return false;
     }
+    this.$el.removeClass('dropable');
+    $('.player.dropable').each(function(e) {
+      $(this).removeClass('dropable');
+    });
+    return false;
   },
   addCard: function(card) {
     var cardView = new CardView({model: card, reversed: false});

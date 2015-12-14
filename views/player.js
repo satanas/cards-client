@@ -3,6 +3,7 @@ var PlayerView = Backbone.View.extend({
     'dragenter': 'dragEnter',
     'dragleave': 'dragLeave',
     'dragover': 'dragOver',
+    'dragend': 'dragEnd',
     'drop': 'drop'
   },
   initialize: function(options) {
@@ -33,10 +34,19 @@ var PlayerView = Backbone.View.extend({
     this.$el.removeClass('dropable');
   },
   dragOver: function(e) {
+    var event = e.originalEvent;
     e.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
     return false;
   },
+  dragEnd: function(e) {
+    this.$el.removeClass('dropable');
+    $('.player.dropable').each(function(e) {
+      $(this).removeClass('dropable');
+    });
+  },
   drop: function(e) {
+    this.dragEnd();
     e.preventDefault();
     var event = e.originalEvent;
     var data = JSON.parse(event.dataTransfer.getData("text/plain"));

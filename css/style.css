@@ -110,13 +110,7 @@ ul.ground > li.card.dragged {
   opacity: 0.4;
 }
 
-ul.ground > li.card.dropable {
-  border-style: dashed;
-  border-width: 2px;
-  border-color: red;
-}
-
-.player.dropable {
+ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   border-style: dashed;
   border-width: 2px;
   border-color: red;
