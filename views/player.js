@@ -24,7 +24,7 @@ var PlayerView = Backbone.View.extend({
       }
     }
 
-    html += "  <label>" + usedMana + "/" + totalMana + "</label>" +
+    html += "  <label>" + (totalMana - usedMana) + "/" + totalMana + "</label>" +
       "</div>" +
       "<div class='player'>" +
       "  <img src='images/unknown.png' />" +
@@ -57,11 +57,10 @@ var PlayerView = Backbone.View.extend({
     var fromField = (event.dataTransfer.types.indexOf("in-field") >= 0) ? true: false;
 
     if (fromField) {
-      this.$el.addClass('dropable');
+      this.$el.children('.player').addClass('dropable');
     }
   },
   dragLeave: function(e) {
-    //this.$el.removeClass('dropable');
   },
   dragOver: function(e) {
     var event = e.originalEvent;
@@ -70,7 +69,7 @@ var PlayerView = Backbone.View.extend({
     return false;
   },
   dragEnd: function(e) {
-    this.$el.removeClass('dropable');
+    this.$el.children('.player').removeClass('dropable');
     $('.player.dropable').each(function(e) {
       $(this).removeClass('dropable');
     });

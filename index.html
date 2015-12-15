@@ -7,14 +7,12 @@
 <script src="lib/jquery-1.11.3.js"></script>
 <script src="lib/underscore-1.8.3.js"></script>
 <script src="lib/backbone-1.2.0.js"></script>
-<script src="lib/hogan-3.0.1.js"></script>
 <script src="lib/foundation.min.js"></script>
 <script src="models/card.js"></script>
 <script src="models/player.js"></script>
 <script src="models/hand.js"></script>
 <script src="models/warriors.js"></script>
 <script src="views/turn.js"></script>
-<script src="views/mana.js"></script>
 <script src="views/card.js"></script>
 <script src="views/hand.js"></script>
 <script src="views/player.js"></script>
@@ -30,22 +28,18 @@ var socket = io('http://127.0.0.1:3000'),
     battlefield = {},
     hands = {},
     players = {},
+    views = {
+      players: {}
+    },
 
     ownId = null,
     opponentId = null,
-    inTurn = false,
-    manaView = null,
-    attacker = null,
-    defender = null,
-
 
     // Unintialized Views
     ownHand = null,
     ownGround = null,
-    ownPlayer = null,
     opponentHand = null,
-    opponentGround = null,
-    opponentPlayer = null;
+    opponentGround = null;
 
 function newMatch() {
   console.log('requesting new match');
@@ -84,13 +78,13 @@ socket.on('player', function (data) {
   ownId = data.player.id;
   hands[ownId] = new Hand();
   battlefield[ownId] = new Warriors();
+  players[ownId] = new Player(data.player);
+  views.players[ownId] = new PlayerView({el: '#you > .util[data-player-ui="true"]', model: players[ownId]});
 
   $('#battlefield').prepend('<div class="' + ownId + '"><ul class="ground"></ul></div>');
 
   ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
   ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
-  ownPlayer = new PlayerView({opponent: false, el: '#you .util .player'});
-  ownPlayer.setHealth(data.player.health);
 });
 
 socket.on('opponents', function (data) {
@@ -99,14 +93,13 @@ socket.on('opponents', function (data) {
   opponentId = opponent.id;
   hands[opponentId] = new Hand();
   battlefield[opponentId] = new Warriors();
+  players[opponentId] = new Player(opponent);
+  views.players[opponentId] = new PlayerView({el: '#opponent > .util[data-player-ui="true"]', model: players[opponentId]});
 
   $('#battlefield').prepend('<div class="' + opponentId + '"><ul class="ground"></ul></div>');
 
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
   opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
-  opponentPlayer = new PlayerView({opponent: true, el: '#opponent .util .player'});
-  opponentPlayer.setHealth(opponent.health);
-  manaView.setMana(opponent.totalMana, opponent.usedMana, false);
 
   for (var i=0; i < data.opponents[0].player.cards; i++) {
     var card = new Card({});
@@ -144,13 +137,11 @@ socket.on('battlefield', function (data) {
 });
 
 socket.on('turn', function (data) {
-  inTurn = true;
-  attacker = null;
-  defender = null;
   battlefield[ownId].prepareTurn();
   battlefield[opponentId].prepareTurn();
   turnView.onTurn();
-  manaView.setMana(data.player.totalMana, data.player.usedMana, true);
+  players[data.player.id].set(data.player);
+
   console.log('Your turn. Current mana:', data.player.totalMana + '. New card:', data.player.card.id);
   if (data.player.card) {
     hands[ownId].add(new Card(data.player.card));
@@ -161,13 +152,11 @@ socket.on('turn', function (data) {
 });
 
 socket.on('wait', function (data) {
-  inTurn = false;
-  attacker = null;
-  defender = null;
   battlefield[ownId].prepareTurn();
   battlefield[opponentId].prepareTurn();
   turnView.enemyTurn();
-  manaView.setMana(data.player.totalMana, data.player.usedMana, false);
+  players[data.player.id].set(data.player);
+
   console.log('You have to wait your turn. New card for ' + data.player.id);
   if (data.player.new_card) {
     var card = new Card({});
@@ -187,12 +176,7 @@ socket.on('played-card', function (data) {
   }
   card = new Card(data.card);
   battlefield[data.player.id].add(card);
-
-  if (data.player.id === ownId) {
-    manaView.setMana(data.totalMana, data.usedMana, true);
-  } else {
-    manaView.setMana(data.totalMana, data.usedMana, false);
-  }
+  players[data.player.id].set(data.player);
 });
 
 socket.on('battle', function (data) {
@@ -219,22 +203,14 @@ socket.on('battle', function (data) {
   }
 
   if (data.attacker.player.transfused > 0) {
-    if (data.attacker.player.id === ownId) {
-      ownPlayer.heal(data.attacker.player.transfused);
-    } else {
-      opponentPlayer.heal(data.attacker.player.transfused);
-    }
+    players[data.attacker.player.id].setHealth(data.attacker.player.health);
+    views.players[data.attacker.player.id].receiveHealth(data.attacker.player.transfused);
   }
 
   if (data.defender.player.damageReceived > 0) {
     console.log('Player', data.defender.player.id, 'has been hit with extra damage of', data.defender.player.damageReceived);
-    if (data.defender.player.id === ownId) {
-      //ownPlayer.setHealth(data.defender.player.health);
-      ownPlayer.doDamage(data.defender.player.damageReceived);
-    } else {
-      //opponentPlayer.setHealth(data.defender.player.health);
-      opponentPlayer.doDamage(data.defender.player.damageReceived);
-    }
+    players[data.defender.player.id].setHealth(data.defender.player.health);
+    views.players[data.defender.player.id].receiveDamage(data.defender.player.damageReceived);
   }
 });
 
@@ -250,13 +226,12 @@ socket.on('direct-damage', function (data) {
   var subject;
   if (data.defender.player.id === ownId) {
     subject = 'You have received';
-    ownPlayer.setHealth(data.defender.player.health);
-    ownPlayer.setDefender(false);
-    ownPlayer.doDamage(data.defender.player.damageReceived);
+    //ownPlayer.setHealth(data.defender.player.health);
+    //ownPlayer.setDefender(false);
+    //ownPlayer.doDamage(data.defender.player.damageReceived);
   } else {
     subject = 'Player ' + data.defender.player.id + ' has received';
     opponentPlayer.setHealth(data.defender.player.health);
-    opponentPlayer.setDefender(false);
     opponentPlayer.doDamage(data.defender.player.damageReceived);
   }
   console.log(subject, data.defender.player.damageReceived, 'points of direct damage');
@@ -327,7 +302,6 @@ function showMessage(title, message) {
 
 $(document).ready(function() {
   turnView = new TurnView({el: '#end-turn'})
-  manaView = new ManaView();
 });
 
 </script>
@@ -346,32 +320,13 @@ $(document).ready(function() {
       <div class="util small-8 columns">
         <ul class="hand"></ul>
       </div>
-      <div class="util small-2 columns">
-        <div class="mana-meter">
-          <span name="10"></span>
-          <span name="9"></span>
-          <span name="8"></span>
-          <span name="7"></span>
-          <span name="6"></span>
-          <span name="5"></span>
-          <span name="4"></span>
-          <span name="3"></span>
-          <span name="2"></span>
-          <span name="1"></span>
-          <label>0/0</label>
-        </div>
-        <div class="player">
-          <img src="images/unknown.png" />
-          <label class="health">0</label>
-        </div>
-      </div>
+      <div data-player-ui="true" class="util small-2 columns"></div>
     </div>
 
     <div id="battlefield"></div>
 
     <div id="you" class="row">
-      <div data-player-ui="true" class="util small-2 columns">
-      </div>
+      <div data-player-ui="true" class="util small-2 columns"></div>
       <div class="util small-8 columns">
         <ul class="hand"></ul>
       </div>

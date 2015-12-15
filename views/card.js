@@ -105,12 +105,14 @@ var CardView = Backbone.View.extend({
     return false;
   },
   dragLeave: function(e) {
-    this.$el.removeClass('dropable');
   },
   dragEnd: function(e) {
     this.$el.removeClass('dragged');
     this.$el.removeClass('dropable');
     $('li.card.dropable').each(function(e) {
+      $(this).removeClass('dropable');
+    });
+    $('.player.dropable').each(function(e) {
       $(this).removeClass('dropable');
     });
   },
