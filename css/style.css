@@ -226,16 +226,24 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   color: red;
 }
 
-.damage-done {
+[data-player-ui=true] > .popup {
   position: absolute;
   top: 20%;
   left: 35%;
   width: 40px;
   height: 40px;
-  background-color: yellow;
   border-radius: 20px;
   padding: 3px 8px;
-  color: red;
   font-weight: bold;
   font-size: 20px;
+}
+
+[data-player-ui=true] > .popup.damaged {
+  background-color: yellow;
+  color: red;
+}
+
+[data-player-ui=true] > .popup.healed {
+  background-color: blue;
+  color: white;
 }

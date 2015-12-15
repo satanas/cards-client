@@ -6,25 +6,47 @@ var PlayerView = Backbone.View.extend({
     'dragend': 'dragEnd',
     'drop': 'drop'
   },
-  initialize: function(options) {
-    this.opponent = options.opponent;
+  render: function() {
+    var totalMana = this.model.get('totalMana'),
+        usedMana = this.model.get('usedMana'),
+        html = "<div class='mana-meter'>";
+    for (var i=10; i > 0; i--) {
+      if (i <= totalMana && i > usedMana) {
+        html += "<span name='" + i+ "' class='available'></span>";
+      } else if (i <= totalMana && i <= usedMana) {
+        html += "<span name='" + i+ "' class='used'></span>";
+      } else {
+        html += "<span name='" + i+ "'></span>";
+      }
+    }
+
+    html += "  <label>" + usedMana + "/" + totalMana + "</label>" +
+      "</div>" +
+      "<div class='player'>" +
+      "  <img src='images/unknown.png' />" +
+      "  <label class='health'>" + this.model.get('health') + "</label>" +
+      "</div>" +
+      "<div class='popup'></div>";
+
+    this.$el.html(html);
+    return this;
   },
-  setDefender: function(value) {
-    this.$el.attr('data-defender', value);
+  receiveDamage: function(damage) {
+    var popup = this.$el.children('.popup');
+    popup.html('-' + damage);
+    popup.addClass('damaged');
+    popup.show();
+    setTimeout.call(this, this.removePopup, 600);
   },
-  setHealth: function(value) {
-    this.$el.children('.health').html(value);
+  receiveHealth: function(health) {
+    var popup = this.$el.children('.popup');
+    popup.html('+' + health);
+    popup.addClass('healed');
+    popup.show();
+    setTimeout.call(this, this.removePopup, 600);
   },
-  doDamage: function(damage) {
-    this.$el.append('<div class="damage-done">-' + damage + '</div>');
-    setTimeout.call(this, this.removeDamage, 600);
-  },
-  heal: function(value) {
-    this.$el.append('<div class="damage-done">+' + value + '</div>');
-    setTimeout.call(this, this.removeDamage, 600);
-  },
-  removeDamage: function() {
-    this.$el.children('.damage-done').fadeOut(400);
+  removePopup: function() {
+    this.$el.children('.popup').fadeOut(400);
   },
   dragEnter: function(e) {
     var event = e.originalEvent;
@@ -35,7 +57,7 @@ var PlayerView = Backbone.View.extend({
     }
   },
   dragLeave: function(e) {
-    this.$el.removeClass('dropable');
+    //this.$el.removeClass('dropable');
   },
   dragOver: function(e) {
     var event = e.originalEvent;
