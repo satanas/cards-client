@@ -8,6 +8,8 @@ var PlayerView = Backbone.View.extend({
   },
   initialize: function() {
     this.model.on('change', this.render, this);
+    this.model.on('receive-damage', this.receiveDamage, this);
+    this.model.on('receive-health', this.receiveHealth, this);
     this.render();
   },
   render: function() {
@@ -40,14 +42,14 @@ var PlayerView = Backbone.View.extend({
     popup.html('-' + damage);
     popup.addClass('damaged');
     popup.show();
-    setTimeout.call(this, this.removePopup, 600);
+    setTimeout.call(this, this.removePopup, 800);
   },
   receiveHealth: function(health) {
     var popup = this.$el.children('.popup');
     popup.html('+' + health);
     popup.addClass('healed');
     popup.show();
-    setTimeout.call(this, this.removePopup, 600);
+    setTimeout.call(this, this.removePopup, 800);
   },
   removePopup: function() {
     this.$el.children('.popup').fadeOut(400);
