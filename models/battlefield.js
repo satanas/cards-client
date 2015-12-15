@@ -1,4 +1,4 @@
-var Warriors = Backbone.Collection.extend({
+var Battlefield = Backbone.Collection.extend({
   model: Card,
   prepareTurn: function() {
     this.each(function(card) {

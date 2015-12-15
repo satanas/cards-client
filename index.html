@@ -11,7 +11,7 @@
 <script src="models/card.js"></script>
 <script src="models/player.js"></script>
 <script src="models/hand.js"></script>
-<script src="models/warriors.js"></script>
+<script src="models/battlefield.js"></script>
 <script src="views/turn.js"></script>
 <script src="views/card.js"></script>
 <script src="views/hand.js"></script>
@@ -31,7 +31,6 @@ var socket = io('http://127.0.0.1:3000'),
     views = {
       players: {}
     },
-
     ownId = null,
     opponentId = null,
 
@@ -77,7 +76,7 @@ socket.on('player', function (data) {
   console.log('Your ID:', data);
   ownId = data.player.id;
   hands[ownId] = new Hand();
-  battlefield[ownId] = new Warriors();
+  battlefield[ownId] = new Battlefield();
   players[ownId] = new Player(data.player);
   views.players[ownId] = new PlayerView({el: '#you > .util[data-player-ui="true"]', model: players[ownId]});
 
@@ -92,7 +91,7 @@ socket.on('opponents', function (data) {
   console.log('Opponents:', opponent);
   opponentId = opponent.id;
   hands[opponentId] = new Hand();
-  battlefield[opponentId] = new Warriors();
+  battlefield[opponentId] = new Battlefield();
   players[opponentId] = new Player(opponent);
   views.players[opponentId] = new PlayerView({el: '#opponent > .util[data-player-ui="true"]', model: players[opponentId]});
 
