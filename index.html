@@ -181,60 +181,61 @@ socket.on('played-card', function (data) {
 
 socket.on('battle', function (data) {
   console.log('battle', data);
-  if (data.attacker.card.health <= 0) {
-    console.log('Attacker card', data.attacker.card.id, 'has died');
-    ownGround.removeCard(data.attacker.card, data.attacker.player, data.attacker.card.damageReceived);
+  var atkPlayer = data.attacker.player,
+      defPlayer = data.defender.player,
+      atkCard = data.attacker.card,
+      defCard = data.defender.card;
+
+  if (atkPlayer.transfused) {
+    players[atkPlayer.id].receiveHealth(atkPlayer.transfused, atkPlayer.health);
+  }
+
+  if (atkCard.health <= 0) {
+    console.log('Attacker card', atkCard.id, 'has died');
+    if (atkPlayer.id === ownId) {
+      ownGround.removeCard(atkCard, atkPlayer, data.attacker.card.damageReceived);
+    } else {
+      opponentGround.removeCard(atkCard, atkPlayer, data.attacker.card.damageReceived);
+    }
   } else {
-    console.log('Attacker card', data.attacker.card.id, 'received', data.attacker.card.damageReceived, 'points of damage');
-    var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
-    card.receiveDamage(data.attacker.card.damageReceived);
-    card.setInvenomed(data.attacker.card.invenomed);
+    console.log('Attacker card', atkCard.id, 'received', atkCard.damageReceived, 'points of damage');
+    var card = battlefield[atkPlayer.id].get(atkCard.id);
+    card.receiveDamage(atkCard.damageReceived);
+    card.setInvenomed(atkCard.invenomed);
     card.setUsed(true);
   }
 
-  if (data.defender.card.health <= 0) {
-    console.log('Defender card', data.attacker.card.id, 'has died');
-    opponentGround.removeCard(data.defender.card, data.defender.player, data.defender.card.damageReceived);
+  if (defCard.health <= 0) {
+    console.log('Defender card', defCard.id, 'has died');
+    if (defPlayer.id === ownId) {
+      ownGround.removeCard(defCard, defPlayer, data.attacker.card.damageReceived);
+    } else {
+      opponentGround.removeCard(defCard, defPlayer, data.attacker.card.damageReceived);
+    }
   } else {
-    console.log('Defender card', data.defender.card.id, 'received', data.defender.card.damageReceived, 'points of damage');
-    var card = battlefield[data.defender.player.id].get(data.defender.card.id);
-    card.receiveDamage(data.defender.card.damageReceived);
-    card.setInvenomed(data.attacker.card.invenomed);
+    console.log('Defender card', defCard.id, 'received', defCard.damageReceived, 'points of damage');
+    var card = battlefield[defPlayer.id].get(defCard.id);
+    card.receiveDamage(defCard.damageReceived);
+    card.setInvenomed(defCard.invenomed);
+    card.setUsed(true);
   }
 
-  if (data.attacker.player.transfused > 0) {
-    players[data.attacker.player.id].setHealth(data.attacker.player.health);
-    views.players[data.attacker.player.id].receiveHealth(data.attacker.player.transfused);
-  }
-
-  if (data.defender.player.damageReceived > 0) {
-    console.log('Player', data.defender.player.id, 'has been hit with extra damage of', data.defender.player.damageReceived);
-    players[data.defender.player.id].setHealth(data.defender.player.health);
-    views.players[data.defender.player.id].receiveDamage(data.defender.player.damageReceived);
+  if (defPlayer.overwhelmed > 0) {
+    console.log('Player', defPlayer.id, 'has been hit with extra damage of', defPlayer.overwhelmed);
+    players[defPlayer.id].receiveDamage(defPlayer.overwhelmed, defPlayer.health);
   }
 });
 
 socket.on('direct-damage', function (data) {
-  //console.log('direct-damage', data);
-  //if (data.attacker.card.health <= 0) {
-  //  ownGround.removeCard(data.attacker.card, data.attacker.player);
-  //} else {
-  var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
+  console.log('direct-damage', data);
+  var card = battlefield[data.attacker.player.id].get(data.attacker.card.id),
+      player = data.defender.player;
+
   card.receiveDamage(data.attacker.card.damageReceived);
   card.setUsed(true);
-  //}
-  var subject;
-  if (data.defender.player.id === ownId) {
-    subject = 'You have received';
-    //ownPlayer.setHealth(data.defender.player.health);
-    //ownPlayer.setDefender(false);
-    //ownPlayer.doDamage(data.defender.player.damageReceived);
-  } else {
-    subject = 'Player ' + data.defender.player.id + ' has received';
-    opponentPlayer.setHealth(data.defender.player.health);
-    opponentPlayer.doDamage(data.defender.player.damageReceived);
-  }
-  console.log(subject, data.defender.player.damageReceived, 'points of direct damage');
+
+  players[player.id].receiveDamage(player.damageReceived, player.health);
+  console.log('Player ' + player.id + ' has received' + player.damageReceived, 'points of direct damage');
 });
 
 socket.on('leader-defeated', function (data) {
