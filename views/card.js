@@ -19,6 +19,7 @@ var CardView = Backbone.View.extend({
     var html = '';
     this.$el.attr('data-player-id', this.model.get('playerId'));
     this.$el.attr('data-card-id', this.model.get('id'));
+    this.$el.attr('data-invenomed', this.model.get('invenomed'));
     if (!this.reversed) {
       var sick = this.model.get('sick');
       var played = this.model.get('played');
@@ -48,6 +49,9 @@ var CardView = Backbone.View.extend({
       }
       if (this.model.get('venom')) {
         abilities += '<span>Venom</span>';
+      }
+      if (this.model.get('transfusion')) {
+        abilities += '<span>Transfusion</span>';
       }
 
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +

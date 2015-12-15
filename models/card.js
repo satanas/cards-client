@@ -11,6 +11,8 @@ var Card = Backbone.Model.extend({
     used: false,
     attacker: false,
     defender: false,
+    invenomed: false,
+    transfusion: false,
     playerId: null
   },
   setSick: function(value) {
@@ -22,14 +24,19 @@ var Card = Backbone.Model.extend({
   setPlayerId: function(playerId) {
     this.set({'playerId': playerId});
   },
-  setAttacker: function(value) {
-    this.set({'attacker': value});
+  setInvenomed: function(value) {
+    this.set({'invenomed': value});
   },
-  setDefender: function(value) {
-    this.set({'defender': value});
-  },
-  setHealth: function(value) {
-    this.set({'health': value});
+  update: function(card) {
+    if (card.hasOwnProperty('sick')) {
+      this.set({'sick': card.sick});
+    }
+    if (card.hasOwnProperty('used')) {
+      this.set({'used': card.used});
+    }
+    if (card.hasOwnProperty('invenomed')) {
+      this.set({'invenomed': card.invenomed});
+    }
   },
   receiveDamage: function(value) {
     var health = this.get('health');

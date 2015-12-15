@@ -19,6 +19,10 @@ var PlayerView = Backbone.View.extend({
     this.$el.append('<div class="damage-done">-' + damage + '</div>');
     setTimeout.call(this, this.removeDamage, 600);
   },
+  heal: function(value) {
+    this.$el.append('<div class="damage-done">+' + value + '</div>');
+    setTimeout.call(this, this.removeDamage, 600);
+  },
   removeDamage: function() {
     this.$el.children('.damage-done').fadeOut(400);
   },

@@ -194,7 +194,7 @@ socket.on('played-card', function (data) {
 });
 
 socket.on('battle', function (data) {
-  //console.log('battledata', data);
+  console.log('battle', data);
   if (data.attacker.card.health <= 0) {
     console.log('Attacker card', data.attacker.card.id, 'has died');
     ownGround.removeCard(data.attacker.card, data.attacker.player, data.attacker.card.damageReceived);
@@ -202,7 +202,7 @@ socket.on('battle', function (data) {
     console.log('Attacker card', data.attacker.card.id, 'received', data.attacker.card.damageReceived, 'points of damage');
     var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
     card.receiveDamage(data.attacker.card.damageReceived);
-    card.setAttacker(false);
+    card.setInvenomed(data.attacker.card.invenomed);
     card.setUsed(true);
   }
 
@@ -213,7 +213,15 @@ socket.on('battle', function (data) {
     console.log('Defender card', data.defender.card.id, 'received', data.defender.card.damageReceived, 'points of damage');
     var card = battlefield[data.defender.player.id].get(data.defender.card.id);
     card.receiveDamage(data.defender.card.damageReceived);
-    card.setDefender(false);
+    card.setInvenomed(data.attacker.card.invenomed);
+  }
+
+  if (data.attacker.player.transfused > 0) {
+    if (data.attacker.player.id === ownId) {
+      ownPlayer.heal(data.attacker.player.transfused);
+    } else {
+      opponentPlayer.heal(data.attacker.player.transfused);
+    }
   }
 
   if (data.defender.player.damageReceived > 0) {
@@ -235,7 +243,6 @@ socket.on('direct-damage', function (data) {
   //} else {
   var card = battlefield[data.attacker.player.id].get(data.attacker.card.id);
   card.receiveDamage(data.attacker.card.damageReceived);
-  card.setAttacker(false);
   card.setUsed(true);
   //}
   var subject;
