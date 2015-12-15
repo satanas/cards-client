@@ -6,6 +6,10 @@ var PlayerView = Backbone.View.extend({
     'dragend': 'dragEnd',
     'drop': 'drop'
   },
+  initialize: function() {
+    this.model.on('change', this.render, this);
+    this.render();
+  },
   render: function() {
     var totalMana = this.model.get('totalMana'),
         usedMana = this.model.get('usedMana'),
