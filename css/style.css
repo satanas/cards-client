@@ -181,6 +181,7 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
 .mana-meter {
   width: 20px;
   float: left;
+  pointer-events: none;
 }
 
 .mana-meter > label {
@@ -212,6 +213,7 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   float: left;
   width: 80px;
   height: 100px;
+  pointer-events: none;
 }
 
 .player img {
@@ -240,6 +242,7 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   padding: 3px 8px;
   font-weight: bold;
   font-size: 20px;
+  pointer-events: none;
 }
 
 [data-player-ui=true] > .popup.damaged {

@@ -169,9 +169,9 @@ socket.on('wait', function (data) {
 
 socket.on('played-card', function (data) {
   console.log('Player', data.player.id, 'played card', data.card.id + ' and has', String(data.totalMana - data.usedMana), 'mana remaining');
-  var card = hands[data.player.id].get(data.card.id);
-  hands[data.player.id].remove(card);
-  if ((data.player.id === opponentId) && (card === undefined)) {
+  hands[data.player.id].remove(data.card.id);
+  if (data.player.id !== ownId) {
+    // FIXME: Please
     opponentHand.removeUnknownCard(opponentId);
   }
   card = new Card(data.card);
@@ -192,6 +192,7 @@ socket.on('battle', function (data) {
 
   if (atkCard.health <= 0) {
     console.log('Attacker card', atkCard.id, 'has died');
+    //battlefield[atkPlayer.id].remove(atkCard.id);
     if (atkPlayer.id === ownId) {
       ownGround.removeCard(atkCard, atkPlayer, data.attacker.card.damageReceived);
     } else {
@@ -207,6 +208,7 @@ socket.on('battle', function (data) {
 
   if (defCard.health <= 0) {
     console.log('Defender card', defCard.id, 'has died');
+    //battlefield[defPlayer.id].remove(defCard.id);
     if (defPlayer.id === ownId) {
       ownGround.removeCard(defCard, defPlayer, data.attacker.card.damageReceived);
     } else {
