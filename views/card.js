@@ -99,12 +99,11 @@ var CardView = Backbone.View.extend({
     }
   },
   dragOver: function(e) {
-    var event = e.originalEvent;
     e.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
     return false;
   },
   dragLeave: function(e) {
+    this.$el.removeClass('dropable');
   },
   dragEnd: function(e) {
     this.$el.removeClass('dragged');

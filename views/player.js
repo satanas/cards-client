@@ -63,11 +63,10 @@ var PlayerView = Backbone.View.extend({
     }
   },
   dragLeave: function(e) {
+    this.$el.children('.player').removeClass('dropable');
   },
   dragOver: function(e) {
-    var event = e.originalEvent;
     e.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
     return false;
   },
   dragEnd: function(e) {
