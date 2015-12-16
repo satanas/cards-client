@@ -176,6 +176,10 @@ socket.on('battle', function (data) {
     console.log('Player', atkPlayer.id, 'has been transfused with', atkPlayer.transfused, 'health');
     players[atkPlayer.id].receiveHealth(atkPlayer.transfused, atkPlayer.health);
   }
+  if (defPlayer.transfused > 0) {
+    console.log('Player', defPlayer.id, 'has been transfused with', defPlayer.transfused, 'health');
+    players[defPlayer.id].receiveHealth(defPlayer.transfused, defPlayer.health);
+  }
 
   if (defPlayer.overwhelmed > 0) {
     console.log('Player', defPlayer.id, 'has been hit with extra damage of', defPlayer.overwhelmed);
