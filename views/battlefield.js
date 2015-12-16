@@ -1,5 +1,7 @@
-var OwnGround = Backbone.View.extend({
-  initialize: function() {
+var BattlefieldView = Backbone.View.extend({
+  initialize: function(options) {
+    this.own = options.own;
+    this.views = {};
     this.collection.on('add', this.addCard, this);
     this.collection.on('remove', this.removeCard, this);
     this.collection.on('change', this.updateCard, this);
@@ -12,6 +14,7 @@ var OwnGround = Backbone.View.extend({
     'drop': 'dropCard'
   },
   dragEnter: function(e) {
+    if (!this.own) return false;
     var event = e.originalEvent;
     var dropTarget = event.target;
     var fromHand = (event.dataTransfer.types.indexOf("in-hand") >= 0) ? true : false;
@@ -24,23 +27,27 @@ var OwnGround = Backbone.View.extend({
     return false;
   },
   dragOver: function(e) {
+    if (!this.own) return false;
     var event = e.originalEvent;
     e.preventDefault();
     event.dataTransfer.dropEffect = 'move';
     return false;
   },
   dragLeave: function(e) {
+    if (!this.own) return false;
     this.$el.removeClass('dropable');
     e.preventDefault();
     return false;
   },
   dragEnd: function(e) {
+    if (!this.own) return false;
     this.$el.removeClass('dropable');
     $('ul.ground.dropable').each(function(e) {
       $(this).removeClass('dropable');
     });
   },
   dropCard: function(e) {
+    if (!this.own) return false;
     this.dragEnd();
     e.preventDefault();
     var event = e.originalEvent;
@@ -57,17 +64,43 @@ var OwnGround = Backbone.View.extend({
   addCard: function(card) {
     var cardView = new CardView({model: card, reversed: false});
     this.$el.append(cardView.render().el);
+    this.views[card.id] = cardView;
   },
-  removeCard: function(card, player, damage) {
-    //console.log('removing card li[data-card-id="' + card.id + '"][data-player-id="' + player.id + '"]');
-    if (!damage) damage = 1;
-    $('li[data-card-id="' + card.id + '"][data-player-id="' + player.id + '"]').append('<div class="damage-done">-' + damage + '</div>');
-    setTimeout.call(this, this.removeDamage, 600, card, player);
+  removeCard: function() {
+    delete this.views[card.id];
+    this.render();
   },
-  updateCard: function(a, b) {
-    //console.log('updating card', a, b);
+  updateCard: function(card) {
+    this.render();
   },
-  removeDamage: function(card, player) {
-    $('li[data-card-id="' + card.id + '"][data-player-id="' + player.id + '"]').remove();
+  prepareForBattle: function(card) {
+    var model = this.collection.get(card.id);
+    this.collection.updateCard(card);
+
+    if (card.damage.venom > 0) {
+      console.log('Card', card.id, 'received', card.damage.venom, 'points of damage due to venom');
+      this.views[card.id].showDamage(card.damage.venom, true);
+    }
+    if (card.health <= 0) {
+      console.log('Card', card.id, 'has died due to venom');
+      this.collection.removeCard(card);
+    }
+  },
+  battleResults: function(card, subject) {
+    var model = this.collection.get(card.id);
+    this.collection.updateCard(card);
+
+    if (card.damageReceived > 0) {
+      console.log(subject, 'card', card.id, 'received', card.damageReceived, 'points of damage');
+      this.views[card.id].showDamage(card.damageReceived);
+    }
+    if (card.health <= 0) {
+      console.log(subject, 'card', card.id, 'has died');
+      this.collection.removeCard(card);
+    }
+  },
+  render: function() {
+    this.$el.html('');
+    this.collection.forEach(this.addCard, this);
   }
 });

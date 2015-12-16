@@ -16,8 +16,7 @@
 <script src="views/card.js"></script>
 <script src="views/hand.js"></script>
 <script src="views/player.js"></script>
-<script src="views/own_ground.js"></script>
-<script src="views/opponent_ground.js"></script>
+<script src="views/battlefield.js"></script>
 <script src="global.js"></script>
 <link rel="stylesheet" href="css/foundation.css" />
 <link rel="stylesheet" href="css/normalize.css" />
@@ -29,16 +28,15 @@ var socket = io('http://127.0.0.1:3000'),
     hands = {},
     players = {},
     views = {
-      players: {}
+      players: {},
+      battlefield: {}
     },
     ownId = null,
     opponentId = null,
 
     // Unintialized Views
     ownHand = null,
-    ownGround = null,
     opponentHand = null,
-    opponentGround = null;
 
 function newMatch() {
   console.log('requesting new match');
@@ -83,7 +81,7 @@ socket.on('player', function (data) {
   $('#battlefield').prepend('<div class="' + ownId + '"><ul class="ground"></ul></div>');
 
   ownHand = new HandView({collection: hands[ownId], el:'#you > .util > ul', opponent: false});
-  ownGround = new OwnGround({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground'});
+  views.battlefield[ownId] = new BattlefieldView({collection: battlefield[ownId], el: '#battlefield .' + ownId + ' .ground', own: true});
 });
 
 socket.on('opponents', function (data) {
@@ -98,7 +96,7 @@ socket.on('opponents', function (data) {
   $('#battlefield').prepend('<div class="' + opponentId + '"><ul class="ground"></ul></div>');
 
   opponentHand = new HandView({collection: hands[opponentId], el:'#opponent > .util > ul', opponent: true});
-  opponentGround = new OpponentGround({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground'});
+  views.battlefield[opponentId] = new BattlefieldView({collection: battlefield[opponentId], el: '#battlefield .' + opponentId + ' .ground', own: false});
 
   for (var i=0; i < data.opponents[0].player.cards; i++) {
     var card = new Card({});
@@ -119,18 +117,7 @@ socket.on('battlefield', function (data) {
   console.log('battlefield', data);
   for (var playerId in data.players) {
     data.players[playerId].cards.forEach(function(c) {
-      console.log('Card', c.id, 'from player', playerId, 'has been updated');
-      var card = battlefield[playerId].get(c.id);
-      card.setSick(c.sick);
-      card.setUsed(c.used);
-      if (c.damage.venom > 0) {
-        console.log('venoooom', c.damage.venom, c.health);
-        if (c.health > 0) {
-          card.receiveDamage(c.damage.venom);
-        } else {
-          ownGround.removeCard(card, data.players[playerId], c.damage.venom);
-        }
-      }
+      views.battlefield[playerId].prepareForBattle(c);
     });
   }
 });
@@ -175,7 +162,6 @@ socket.on('played-card', function (data) {
   }
   card = new Card(data.card);
   battlefield[data.player.id].add(card);
-  players[data.player.id].set(data.player);
 });
 
 socket.on('battle', function (data) {
@@ -185,46 +171,18 @@ socket.on('battle', function (data) {
       atkCard = data.attacker.card,
       defCard = data.defender.card;
 
-  if (atkPlayer.transfused) {
+  if (atkPlayer.transfused > 0) {
+    console.log('Player', atkPlayer.id, 'has been transfused with', atkPlayer.transfused, 'health');
     players[atkPlayer.id].receiveHealth(atkPlayer.transfused, atkPlayer.health);
-  }
-
-  if (atkCard.health <= 0) {
-    console.log('Attacker card', atkCard.id, 'has died');
-    //battlefield[atkPlayer.id].remove(atkCard.id);
-    if (atkPlayer.id === ownId) {
-      ownGround.removeCard(atkCard, atkPlayer, data.attacker.card.damageReceived);
-    } else {
-      opponentGround.removeCard(atkCard, atkPlayer, data.attacker.card.damageReceived);
-    }
-  } else {
-    console.log('Attacker card', atkCard.id, 'received', atkCard.damageReceived, 'points of damage');
-    var card = battlefield[atkPlayer.id].get(atkCard.id);
-    card.receiveDamage(atkCard.damageReceived);
-    card.setInvenomed(atkCard.invenomed);
-    card.setUsed(true);
-  }
-
-  if (defCard.health <= 0) {
-    console.log('Defender card', defCard.id, 'has died');
-    //battlefield[defPlayer.id].remove(defCard.id);
-    if (defPlayer.id === ownId) {
-      ownGround.removeCard(defCard, defPlayer, data.attacker.card.damageReceived);
-    } else {
-      opponentGround.removeCard(defCard, defPlayer, data.attacker.card.damageReceived);
-    }
-  } else {
-    console.log('Defender card', defCard.id, 'received', defCard.damageReceived, 'points of damage');
-    var card = battlefield[defPlayer.id].get(defCard.id);
-    card.receiveDamage(defCard.damageReceived);
-    card.setInvenomed(defCard.invenomed);
-    card.setUsed(true);
   }
 
   if (defPlayer.overwhelmed > 0) {
     console.log('Player', defPlayer.id, 'has been hit with extra damage of', defPlayer.overwhelmed);
     players[defPlayer.id].receiveDamage(defPlayer.overwhelmed, defPlayer.health);
   }
+
+  views.battlefield[atkPlayer.id].battleResults(atkCard, 'Attacking');
+  views.battlefield[defPlayer.id].battleResults(defCard, 'Defending');
 });
 
 socket.on('direct-damage', function (data) {

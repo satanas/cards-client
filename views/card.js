@@ -2,9 +2,9 @@ var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
   events: {
+    'receive-damage': 'showDamage',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
-    'damageReceived': 'doDamage',
     'dragenter': 'dragEnter',
     'dragover': 'dragOver',
     'dragleave': 'dragLeave',
@@ -57,17 +57,29 @@ var CardView = Backbone.View.extend({
       html = '<div class="mana">' + this.model.get('mana') + '</div>' +
         '<div class="name">' + this.model.get('name') + '</div>' +
         '<div class="abilities">' + abilities + '</div>' +
-        '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>';
+        '<div class="stats">' +  this.model.get('attack') + '/' + this.model.get('health') + '</div>' +
+        '<div class="popup"></div>';
     }
     this.$el.html(html);
     return this;
   },
-  doDamage: function(damage) {
-    this.$el.append('<div class="damage-done">-' + damage + '</div>');
+  showDamage: function(damage, venom) {
+    var popup = this.getPopup();
+    popup.html('-' + damage);
+    if (venom) {
+      popup.addClass('invenomed');
+    } else {
+      popup.addClass('damaged');
+    }
+    popup.show();
     setTimeout.call(this, this.removeDamage, 600);
   },
   removeDamage: function() {
-    this.$el.children('.damage-done').fadeOut(400);
+    var popup = this.getPopup();
+    popup.fadeOut(400);
+  },
+  getPopup: function() {
+    return $('li[data-card-id="' + this.model.get('id') + '"][data-player-id="' + this.model.get('playerId') + '"]').children('.popup');
   },
   dragStart: function(e) {
     var event = e.originalEvent;
