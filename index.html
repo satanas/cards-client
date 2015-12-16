@@ -128,7 +128,7 @@ socket.on('turn', function (data) {
   turnView.onTurn();
   players[data.player.id].set(data.player);
 
-  console.log('Your turn. Current mana:', data.player.totalMana + '. New card:', data.player.card.id);
+  console.log('Your turn. Current mana:', data.player.totalMana + '. New card:', data.player.card.id, data);
   if (data.player.card) {
     hands[ownId].add(new Card(data.player.card));
   } else {
@@ -154,8 +154,9 @@ socket.on('wait', function (data) {
 });
 
 socket.on('played-card', function (data) {
-  console.log('Player', data.player.id, 'played card', data.card.id + ' and has', String(data.totalMana - data.usedMana), 'mana remaining');
+  console.log('Player', data.player.id, 'played card', data.card.id + ' and has', String(data.player.totalMana - data.player.usedMana), 'mana remaining');
   hands[data.player.id].remove(data.card.id);
+  players[data.player.id].set(data.player);
   if (data.player.id !== ownId) {
     // FIXME: Please
     opponentHand.removeUnknownCard(opponentId);
