@@ -36,7 +36,7 @@ var socket = io('http://127.0.0.1:3000'),
 
     // Unintialized Views
     ownHand = null,
-    opponentHand = null,
+    opponentHand = null;
 
 function newMatch() {
   console.log('requesting new match');
@@ -187,12 +187,10 @@ socket.on('battle', function (data) {
 
 socket.on('direct-damage', function (data) {
   console.log('direct-damage', data);
-  var card = battlefield[data.attacker.player.id].get(data.attacker.card.id),
+  var card = data.attacker.card,
       player = data.defender.player;
 
-  card.receiveDamage(data.attacker.card.damageReceived);
-  card.setUsed(true);
-
+  battlefield[data.attacker.player.id].updateCard(card);
   players[player.id].receiveDamage(player.damageReceived, player.health);
   console.log('Player ' + player.id + ' has received' + player.damageReceived, 'points of direct damage');
 });
