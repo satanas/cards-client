@@ -37,10 +37,8 @@ var Card = Backbone.Model.extend({
     if (card.hasOwnProperty('invenomed')) {
       this.set({'invenomed': card.invenomed});
     }
-  },
-  receiveDamage: function(value) {
-    var health = this.get('health');
-    this.set({'health': health - value});
-    this.trigger('damageReceived', {damage: value});
+    if (card.hasOwnProperty('health')) {
+      this.set({'health': card.health});
+    }
   }
 });
