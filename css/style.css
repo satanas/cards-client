@@ -98,12 +98,12 @@ ul.ground > li.card[data-used="true"] {
   background-color: none;
 }
 
-ul.ground > li.card[data-attacker="true"] {
-  border-color: #0f0;
+ul.ground > li.card[data-invenomed="true"] {
+  background-color: #94c314;
 }
 
-ul.ground > li.card[data-defender="true"], div.player[data-defender="true"] {
-  border-color: #f00;
+ul.ground > li.card[data-invenomed="true"][data-used="true"] {
+  background-color: #bbc3a6;
 }
 
 ul.ground > li.card.dragged {
