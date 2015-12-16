@@ -232,7 +232,7 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   padding: 4px 7px;
 }
 
-[data-player-ui=true] > .popup {
+[data-player-ui=true] > .popup, .card > .popup {
   position: absolute;
   top: 20%;
   left: 35%;
@@ -245,12 +245,22 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   pointer-events: none;
 }
 
-[data-player-ui=true] > .popup.damaged {
+[data-player-ui=true] > .popup.damaged, .card > .popup.damaged {
   background-color: yellow;
   color: red;
 }
 
-[data-player-ui=true] > .popup.healed {
+[data-player-ui=true] > .popup.healed, .card > .popup.healed {
   background-color: blue;
   color: white;
+}
+
+.card > .popup.invenomed {
+  background-color: green;
+  color: yellow;
+}
+
+.card > .popup {
+  top: 32%;
+  left: 24%;
 }
