@@ -156,6 +156,10 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   pointer-events: none;
 }
 
+.card .abilities span {
+  display: block;
+}
+
 .card .stats {
   font-size: 14px;
   top: 80px;

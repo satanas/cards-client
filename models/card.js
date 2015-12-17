@@ -14,6 +14,7 @@ var Card = Backbone.Model.extend({
     invenomed: false,
     transfusion: false,
     vampirism: false,
+    berserker: false,
     playerId: null
   },
   setSick: function(value) {
