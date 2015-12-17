@@ -246,10 +246,12 @@ socket.on('card-sick', function (data) {
 });
 
 socket.on('card-used', function (data) {
+  showMessage('Card used', "That card was already used");
   console.log('That card was already used');
 });
 
 socket.on('invalid-op', function (data) {
+  showMessage('Invalid operation', data);
   console.log('Invalid operation. You can not do that');
 });
 
