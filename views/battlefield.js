@@ -98,6 +98,10 @@ var BattlefieldView = Backbone.View.extend({
       console.log(subject, 'card', card.id, 'has died');
       this.collection.removeCard(card);
     }
+    if (card.bloodfed > 0) {
+      console.log(subject, 'card', card.id, 'received', card.bloodfed, 'points of health due to vampirism');
+      setTimeout.call(this.views[card.id], this.views[card.id].showPopup, 500, card.bloodfed, 'heal');
+    }
   },
   render: function() {
     this.$el.html('');
