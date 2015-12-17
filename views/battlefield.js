@@ -79,7 +79,7 @@ var BattlefieldView = Backbone.View.extend({
 
     if (card.damage.venom > 0) {
       console.log('Card', card.id, 'received', card.damage.venom, 'points of damage due to venom');
-      this.views[card.id].showDamage(card.damage.venom, true);
+      this.views[card.id].showPopup(card.damage.venom, 'venom');
     }
     if (card.health <= 0) {
       console.log('Card', card.id, 'has died due to venom');
@@ -92,7 +92,7 @@ var BattlefieldView = Backbone.View.extend({
 
     if (card.damageReceived > 0) {
       console.log(subject, 'card', card.id, 'received', card.damageReceived, 'points of damage');
-      this.views[card.id].showDamage(card.damageReceived);
+      this.views[card.id].showPopup(card.damageReceived, 'damage');
     }
     if (card.health <= 0) {
       console.log(subject, 'card', card.id, 'has died');

@@ -2,7 +2,6 @@ var CardView = Backbone.View.extend({
   tagName: 'li',
   className: 'card',
   events: {
-    'receive-damage': 'showDamage',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
     'dragenter': 'dragEnter',
@@ -63,13 +62,17 @@ var CardView = Backbone.View.extend({
     this.$el.html(html);
     return this;
   },
-  showDamage: function(damage, venom) {
+  showPopup: function(value, type) {
     var popup = this.getPopup();
-    popup.html('-' + damage);
-    if (venom) {
+    if (type === 'venom') {
+      popup.html('-' + value);
       popup.addClass('invenomed');
-    } else {
+    } else if (type === 'damage') {
+      popup.html('-' + value);
       popup.addClass('damaged');
+    } else if (type === 'heal') {
+      popup.html('+' + value);
+      popup.addClass('healed');
     }
     popup.show();
     setTimeout.call(this, this.removeDamage, 600);
