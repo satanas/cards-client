@@ -1,10 +1,5 @@
 var Battlefield = Backbone.Collection.extend({
   model: Card,
-  prepareTurn: function() {
-    this.each(function(card) {
-      card.setUsed(false);
-    });
-  },
   updateCard: function(c) {
     this.get(c.id).update(c);
   },

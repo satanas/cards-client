@@ -123,8 +123,6 @@ socket.on('battlefield', function (data) {
 });
 
 socket.on('turn', function (data) {
-  battlefield[ownId].prepareTurn();
-  battlefield[opponentId].prepareTurn();
   turnView.onTurn();
   players[data.player.id].set(data.player);
 
@@ -138,8 +136,6 @@ socket.on('turn', function (data) {
 });
 
 socket.on('wait', function (data) {
-  battlefield[ownId].prepareTurn();
-  battlefield[opponentId].prepareTurn();
   turnView.enemyTurn();
   players[data.player.id].set(data.player);
 
