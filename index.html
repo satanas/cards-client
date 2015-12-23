@@ -34,6 +34,8 @@ var socket = io('http://127.0.0.1:3000'),
     ownId = null,
     opponentId = null,
 
+    popupTimer = null,
+
     // Unintialized Views
     ownHand = null,
     opponentHand = null;
@@ -300,6 +302,8 @@ $(document).ready(function() {
         </div>
       </div>
     </div>
+
+    <div id="card-details"></div>
   </div>
 
   <div id="modal-message" class="reveal-modal tiny" data-reveal aria-labelledby="modal-title" aria-hidden="true" role="dialog">
