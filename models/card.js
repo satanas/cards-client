@@ -3,6 +3,7 @@ var Card = Backbone.Model.extend({
     id: null,
     playerId: null,
     name: '',
+    type: null,
     description: '',
     flavorText: '',
     mana: 1,

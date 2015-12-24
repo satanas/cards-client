@@ -16,6 +16,7 @@
 <script src="views/card.js"></script>
 <script src="views/hand.js"></script>
 <script src="views/player.js"></script>
+<script src="views/card_popup.js"></script>
 <script src="views/battlefield.js"></script>
 <script src="global.js"></script>
 <link rel="stylesheet" href="css/foundation.css" />
@@ -277,7 +278,7 @@ function getPosition (element) {
 
 $(document).ready(function() {
   turnView = new TurnView({el: '#end-turn'});
-  $('#card-details').hide();
+  views.cardDetails = new CardPopupView();
 });
 
 </script>

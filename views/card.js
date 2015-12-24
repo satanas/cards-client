@@ -176,12 +176,9 @@ var CardView = Backbone.View.extend({
   },
   showCardInfo: function(e) {
     var pos = getPosition(this.$el[0]);
-    $('#card-details').css('top', (pos.y - 360) + 'px');
-    $('#card-details').css('left', (pos.x + 32.5 - 120) + 'px');
-    $('#card-details').show();
+    views.cardDetails.show(pos.x, pos.y, this.model);
   },
   hideCardInfo: function(e) {
-    $('#card-details').hide();
-    $('#card-details').html('');
+    views.cardDetails.hide();
   }
 });
