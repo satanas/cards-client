@@ -279,3 +279,63 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   top: 32%;
   left: 24%;
 }
+
+#card-details {
+  font-size: 0.8em;
+}
+
+#card-details .mana {
+  font-size: 10px;
+  color: white;
+  background-color: #c600ff;
+  width: 14px;
+  border-radius: 20px;
+  padding: 0 4px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#card-details .image {
+  height: 180px;
+  width: 238px;
+  background-color: gray;
+}
+
+#card-details .name {
+  text-align: center;
+  border-width: 1px 0 1px 0;
+  border-color: #000;
+  border-style: solid;
+  font-weight: bold;
+}
+
+#card-details .information {
+  height: 115px;
+  padding: 5px;
+  font-size: 0.9em;
+}
+
+#card-details .description {
+  padding-bottom: 5px;
+}
+
+#card-details .flavor-text {
+  font-style: italic;
+  font-size: 0.8em;
+  padding: 5px;
+  height: 23px;
+}
+
+#card-details .footer {
+  padding: 0 4px;
+}
+
+#card-details .stats {
+  font-size: 14px;
+  float: left;
+}
+
+#card-details .type {
+  float: right;
+}

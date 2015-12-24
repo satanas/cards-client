@@ -1,7 +1,6 @@
 var CardPopupView = Backbone.View.extend({
-  tagName: 'div',
-  className: 'card',
   initialize: function(options) {
+    this.abilities = ['rush', 'overwhelm', 'firstStrike', 'deathtouch', 'venom', 'transfusion', 'vampirism', 'berserker'];
     this.popup = $('#card-details');
     this.popup.hide();
   },
@@ -21,29 +20,21 @@ var CardPopupView = Backbone.View.extend({
     this.$el.attr('data-card-id', model.get('id'));
 
     var abilities = ''
-    if (model.get('rush')) {
-      abilities += '<span>Rush</span>';
+    this.abilities.forEach(function(a) {
+      if (model.get(a)) {
+        abilities += '<div><strong>' + a + '</strong>: ' + abilitiesDescription[a] + '</div>';
+      }
+    })
+
+    var fText = model.get('flavorText'),
+        flavorText = '';
+    if (fText !== null && fText !== '') {
+      flavorText = '"' + model.get('flavorText') + '"';
     }
-    if (model.get('overwhelm')) {
-      abilities += '<span>Overwhelm</span>';
-    }
-    if (model.get('firstStrike')) {
-      abilities += '<span>First strike</span>';
-    }
-    if (model.get('deathtouch')) {
-      abilities += '<span>Deathtouch</span>';
-    }
-    if (model.get('venom')) {
-      abilities += '<span>Venom</span>';
-    }
-    if (model.get('transfusion')) {
-      abilities += '<span>Transfusion</span>';
-    }
-    if (model.get('vampirism')) {
-      abilities += '<span>Vampirism</span>';
-    }
-    if (model.get('berserker')) {
-      abilities += '<span>Berserker</span>';
+
+    cardType = '';
+    if (model.get('type') === 1) {
+      cardType = 'Creature';
     }
 
     html = '<div class="mana">' + model.get('mana') + '</div>' +
@@ -52,11 +43,12 @@ var CardPopupView = Backbone.View.extend({
       '<div class="information">' +
       '  <div class="description">' + model.get('description') + '</div>' +
       abilities +
-      '  <div class="flavor-text">' + model.get('flavorText') + '</div>' +
       '</div>' +
+      '<div class="flavor-text">' + flavorText + '</div>' +
       '<div class="footer">' +
-      '  <div class="type">' + model.get('type') + '</div>' +
       '  <div class="stats">' +  model.get('attack') + '/' + model.get('health') + '</div>' +
+      '  <div class="type">' + cardType + '</div>' +
+      '  <div class="clearfix"></div>' +
       '</div>';
 
     this.$el.html(html);
