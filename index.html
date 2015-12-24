@@ -29,7 +29,8 @@ var socket = io('http://127.0.0.1:3000'),
     players = {},
     views = {
       players: {},
-      battlefield: {}
+      battlefield: {},
+      cardDetails: null
     },
     ownId = null,
     opponentId = null,
@@ -263,8 +264,20 @@ function showMessage(title, message) {
   $('#modal-message').foundation('reveal', 'open');
 }
 
+function getPosition (element) {
+  var xPosition = 0, yPosition = 0;
+
+  while (element) {
+      xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+      yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+      element = element.offsetParent;
+  }
+  return { x: xPosition, y: yPosition };
+}
+
 $(document).ready(function() {
-  turnView = new TurnView({el: '#end-turn'})
+  turnView = new TurnView({el: '#end-turn'});
+  $('#card-details').hide();
 });
 
 </script>

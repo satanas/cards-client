@@ -7,8 +7,10 @@ var CardView = Backbone.View.extend({
     'dragenter': 'dragEnter',
     'dragover': 'dragOver',
     'dragleave': 'dragLeave',
-    'drop': 'drop'
-  },
+    'drop': 'drop',
+    'mouseenter': 'showCardInfo',
+    'mouseleave': 'hideCardInfo'
+   },
   initialize: function(options) {
     this.reversed = options.reversed;
     this.model.on('change', this.render, this);
@@ -171,5 +173,15 @@ var CardView = Backbone.View.extend({
       });
     }
     return false;
+  },
+  showCardInfo: function(e) {
+    var pos = getPosition(this.$el[0]);
+    $('#card-details').css('top', (pos.y - 360) + 'px');
+    $('#card-details').css('left', (pos.x + 32.5 - 120) + 'px');
+    $('#card-details').show();
+  },
+  hideCardInfo: function(e) {
+    $('#card-details').hide();
+    $('#card-details').html('');
   }
 });

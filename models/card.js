@@ -2,7 +2,6 @@ var Card = Backbone.Model.extend({
   defaults: {
     id: null,
     playerId: null,
-    fullsize: false,
     name: '',
     description: '',
     flavorText: '',
