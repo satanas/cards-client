@@ -12,8 +12,8 @@ var CardPopupView = Backbone.View.extend({
     this.popup.show();
   },
   hide: function() {
-    //this.popup.hide();
-    //this.popup.html('');
+    this.popup.hide();
+    this.popup.html('');
   },
   render: function(model) {
     var html = '';
@@ -38,7 +38,7 @@ var CardPopupView = Backbone.View.extend({
     }
 
     html = '<div class="mana">' + model.get('mana') + '</div>' +
-      '<div class="image">' + model.get('image') + '</div>' +
+      '<div class="image"><img src="images/' + model.get('image') + '" /></div>' +
       '<div class="name">' + model.get('name') + '</div>' +
       '<div class="information">' +
       '  <div class="description">' + model.get('description') + '</div>' +

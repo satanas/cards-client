@@ -285,18 +285,21 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
 }
 
 #card-details .mana {
-  font-size: 10px;
+  font-size: 1.2em;
   color: white;
   background-color: #c600ff;
-  width: 14px;
+  width: 25px;
+  height: 25px;
   border-radius: 20px;
   padding: 0 4px;
   position: absolute;
   top: 0px;
   left: 0px;
+  text-align: center;
+  font-weight: bold;
 }
 
-#card-details .image {
+#card-details .image, #card-details .image img {
   height: 180px;
   width: 238px;
   background-color: gray;
