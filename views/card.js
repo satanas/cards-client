@@ -179,7 +179,7 @@ var CardView = Backbone.View.extend({
     var pos = getPosition(this.$el[0]);
     popupTimer = setTimeout.call(this, function() {
       views.cardDetails.show(pos.x, pos.y, this.model);
-    }, 1200);
+    }, CARD_DETAILS_TIMEOUT);
   },
   hideCardInfo: function(e) {
     if (views.cardDetails.visible) {
