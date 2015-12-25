@@ -24,7 +24,8 @@
 <link rel="stylesheet" href="css/style.css" />
 
 <script>
-var socket = io('http://127.0.0.1:3000'),
+var host = window.location.host.split(':')[0],
+    socket = io(host + ':3000'),
     battlefield = {},
     hands = {},
     players = {},
