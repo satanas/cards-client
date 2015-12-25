@@ -1,10 +1,12 @@
 var CardPopupView = Backbone.View.extend({
   initialize: function(options) {
+    this.visible = false;
     this.abilities = ['rush', 'overwhelm', 'firstStrike', 'deathtouch', 'venom', 'transfusion', 'vampirism', 'berserker'];
     this.popup = $('#card-details');
     this.popup.hide();
   },
   show: function(x, y, card) {
+    this.visible = true;
     xPos = x + 32.5 - 120;
     if (xPos < 0) xPos = 0;
     this.render(card);
@@ -14,6 +16,7 @@ var CardPopupView = Backbone.View.extend({
     this.popup.show();
   },
   hide: function() {
+    this.visible = false;
     this.popup.hide();
     this.popup.html('');
   },

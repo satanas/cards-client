@@ -177,9 +177,19 @@ var CardView = Backbone.View.extend({
   },
   showCardInfo: function(e) {
     var pos = getPosition(this.$el[0]);
-    views.cardDetails.show(pos.x, pos.y, this.model);
+    popupTimer = setTimeout.call(this, function() {
+      console.log('calling timer');
+      views.cardDetails.show(pos.x, pos.y, this.model);
+    }, 1200);
+    console.log('setting timer', popupTimer);
   },
   hideCardInfo: function(e) {
-    views.cardDetails.hide();
+    console.log('hiding popup', popupTimer);
+    if (views.cardDetails.visible) {
+      views.cardDetails.hide();
+      popupTimer = null;
+    } else if (popupTimer !== null) {
+      clearTimeout(popupTimer);
+    }
   }
 });
