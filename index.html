@@ -260,6 +260,10 @@ socket.on('invalid-op', function (data) {
   console.log('Invalid operation. You can not do that');
 });
 
+socket.on('server-not-ready', function (data) {
+  showMessage('Server not ready', 'Please, try again in a couple of minutes');
+});
+
 function showMessage(title, message) {
   $("#modal-title").html(title);
   $("#modal-description").html(message);
