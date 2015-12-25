@@ -5,9 +5,11 @@ var CardPopupView = Backbone.View.extend({
     this.popup.hide();
   },
   show: function(x, y, card) {
+    xPos = x + 32.5 - 120;
+    if (xPos < 0) xPos = 0;
     this.render(card);
     this.popup.css('top', (y - 360) + 'px');
-    this.popup.css('left', (x + 32.5 - 120) + 'px');
+    this.popup.css('left', xPos + 'px');
     this.popup.html(this.render(card));
     this.popup.show();
   },

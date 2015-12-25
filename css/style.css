@@ -62,7 +62,7 @@ ul.hand, ul.ground {
 
 ul.hand > li.card {
   height: 100px;
-  width: 65px;
+  width: 67px;
   position: relative;
   float: left;
 }

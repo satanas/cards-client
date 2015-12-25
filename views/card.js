@@ -109,6 +109,7 @@ var CardView = Backbone.View.extend({
       event.dataTransfer.setData("in-hand", "");
     }
     this.$el.addClass('dragged');
+    views.cardDetails.hide();
   },
   dragEnter: function(e) {
     var event = e.originalEvent;
