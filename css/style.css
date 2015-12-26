@@ -283,6 +283,8 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
 
 #card-details {
   font-size: 0.8em;
+  padding: 5px;
+  background-color: skyblue;
 }
 
 #card-details .mana {
@@ -293,6 +295,7 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   height: 25px;
   border-radius: 20px;
   padding: 0 4px;
+  margin: 8px 0 0 8px;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -301,23 +304,22 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
 }
 
 #card-details .image, #card-details .image img {
-  height: 180px;
-  width: 238px;
+  height: 182px;
+  width: 228px;
   background-color: gray;
 }
 
 #card-details .name {
   text-align: center;
-  border-width: 1px 0 1px 0;
-  border-color: #000;
-  border-style: solid;
   font-weight: bold;
+  margin: 1px 0;
 }
 
 #card-details .information {
-  height: 115px;
+  height: 128px;
   padding: 5px;
   font-size: 0.9em;
+  background-color: seashell;
 }
 
 #card-details .description {
@@ -326,13 +328,12 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
 
 #card-details .flavor-text {
   font-style: italic;
-  font-size: 0.8em;
-  padding: 5px;
-  height: 23px;
+  font-size: 0.9em;
+  padding: 10px 0 5px 0;
+  background-color: seashell;
 }
 
 #card-details .footer {
-  padding: 0 4px;
 }
 
 #card-details .stats {

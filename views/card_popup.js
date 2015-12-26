@@ -45,14 +45,11 @@ var CardPopupView = Backbone.View.extend({
       }
     })
 
-    var fText = model.get('flavorText'),
-        flavorText = '';
-    if (fText !== null && fText !== '') {
-      flavorText = '"' + model.get('flavorText') + '"';
-    }
+    var fText = model.get('flavorText');
+    flavorText = (fText !== null && fText !== '') ? model.get('flavorText') : '';
 
     cardType = '';
-    if (model.get('type') === 1) {
+    if (model.get('type') === "1") {
       cardType = 'Creature';
     }
 
@@ -60,10 +57,9 @@ var CardPopupView = Backbone.View.extend({
       '<div class="image"><img src="images/' + model.get('image') + '" /></div>' +
       '<div class="name">' + model.get('name') + '</div>' +
       '<div class="information">' +
-      '  <div class="description">' + model.get('description') + '</div>' +
       abilities +
+      '  <div class="flavor-text">' + flavorText + '</div>' +
       '</div>' +
-      '<div class="flavor-text">' + flavorText + '</div>' +
       '<div class="footer">' +
       '  <div class="stats">' +  model.get('attack') + '/' + model.get('health') + '</div>' +
       '  <div class="type">' + cardType + '</div>' +
