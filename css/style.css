@@ -49,7 +49,7 @@ body .attackable {
 
 .card {
   cursor: move;
-  background-color: #fff;
+  background-color: skyblue;
 }
 
 ul.hand, ul.ground {
@@ -154,11 +154,20 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   border-radius: 20px;
   padding: 0 4px;
   pointer-events: none;
+  position: absolute;
+}
+
+.card .image {
+  pointer-events: none;
 }
 
 .card .name {
   font-size: 10px;
   pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
 }
 
 .card .abilities {
@@ -172,8 +181,8 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
 }
 
 .card .stats {
-  font-size: 14px;
-  top: 80px;
+  font-size: 0.6em;
+  top: 85px;
   position: absolute;
   pointer-events: none;
 }
