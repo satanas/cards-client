@@ -116,17 +116,6 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   border-color: red;
 }
 
-#card-details {
-  height: 360px;
-  width: 240px;
-  border: 1px solid #000;
-  background-color: #fff;
-  top: 80px;
-  left: 100px;
-  position: absolute;
-  z-index: 2;
-}
-
 #you > .util > .face {
   z-index: 1;
   width: 120px;
@@ -294,6 +283,18 @@ ul.ground > li.card.dropable, .player.dropable, ul.ground.dropable {
   font-size: 0.8em;
   padding: 5px;
   background-color: skyblue;
+  height: 360px;
+  width: 240px;
+  border: 1px solid #000;
+  top: 80px;
+  left: 100px;
+  position: absolute;
+  z-index: 2;
+}
+
+#card-details.preview {
+  top: 0px;
+  left: 0px;
 }
 
 #card-details .mana {
