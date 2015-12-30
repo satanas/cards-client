@@ -3,7 +3,7 @@ hr {
   padding: 0;
 }
 
-body {
+body.game {
   cursor: default;
   -moz-user-select: none;
   -khtml-user-select: none;
