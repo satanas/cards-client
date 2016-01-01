@@ -13,8 +13,6 @@ var Card = Backbone.Model.extend({
     played: false,
     reversed: false,
     used: false,
-    attacker: false,
-    defender: false,
     invenomed: false,
     transfusion: false,
     vampirism: false,
